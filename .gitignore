@@ -48,4 +48,4 @@ Temporary Items
 
 # Ignoring file (build and cmake.TXT)
 projet-Janjar-Cibils-Premi/build/*
-cMakeLists.txt
+CMakeLists.txt.user
