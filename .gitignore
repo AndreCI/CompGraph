@@ -45,3 +45,7 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Ignoring file (build and cmake.TXT)
+projet-Janjar-Cibils-Premi/build
+cMakeLists.txt
