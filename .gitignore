@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 # Ignoring file (build and cmake.TXT)
-projet-Janjar-Cibils-Premi/build
+projet-Janjar-Cibils-Premi/build/*
 cMakeLists.txt
