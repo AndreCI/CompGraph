@@ -174,7 +174,7 @@ void MousePos(GLFWwindow* window, double x, double y) {
 
 
         if(p.y>currenty){
-            view_matrix = translate(view_matrix,vec3(0.0f, 0.0f, 0.0f));
+            view_matrix = translate(view_matrix,vec3(0.0f, 0.0f, 0.0f)); 
         }else{
             //view_matrix = translate(view_matrix,vec3(-0.0f, -0.0f, -0.0f));
         }

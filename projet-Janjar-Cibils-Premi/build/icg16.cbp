@@ -135,6 +135,9 @@
       <Unit filename="C:/Users/andre/Documents/GitHub/CompGrah/projet-Janjar-Cibils-Premi/src/cube/cube_vshader.glsl">
          <Option target="src"/>
       </Unit>
+      <Unit filename="C:/Users/andre/Documents/GitHub/CompGrah/projet-Janjar-Cibils-Premi/src/framebuffer.h">
+         <Option target="src"/>
+      </Unit>
       <Unit filename="C:/Users/andre/Documents/GitHub/CompGrah/projet-Janjar-Cibils-Premi/src/grid/grid.h">
          <Option target="src"/>
       </Unit>
