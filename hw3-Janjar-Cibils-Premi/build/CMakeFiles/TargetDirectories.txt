@@ -1,0 +1,3 @@
+C:/Users/Max-Pc/Downloads/hw3-Janjar-Cibils-Premi/build/CMakeFiles/common_headers.dir
+C:/Users/Max-Pc/Downloads/hw3-Janjar-Cibils-Premi/build/hw3_trackball/CMakeFiles/hw3_trackball.dir
+C:/Users/Max-Pc/Downloads/hw3-Janjar-Cibils-Premi/build/hw3_trackball/CMakeFiles/copy_shaders_hw3_trackball.dir
