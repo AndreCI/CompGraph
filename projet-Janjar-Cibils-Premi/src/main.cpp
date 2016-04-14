@@ -112,7 +112,7 @@ void Init() {
     view_matrix = LookAt(vec3(2.0f, 2.0f, 4.0f),
                          vec3(0.0f, 0.0f, 0.0f),
                          vec3(0.0f, 1.0f, 0.0f));
-    // view_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -4.0f));
+     view_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -4.0f));
 
     trackball_matrix = IDENTITY_MATRIX;
 
@@ -154,6 +154,7 @@ void MouseButton(GLFWwindow* window, int button, int action, int mod) {
         trackball.BeingDrag(p.x, p.y);
         old_trackball_matrix = trackball_matrix;
         // Store the current state of the model matrix.
+        //zoom = p.y;
     }
 }
 
@@ -165,6 +166,10 @@ void MousePos(GLFWwindow* window, double x, double y) {
         // See also the mouse_button(...) function.
         // trackball_matrix = ...
          trackball_matrix = trackball.Drag(p.x,p.y);
+
+         mat4 t = trackball.Drag(p.x,p.y);
+
+         trackball_matrix = t*old_trackball_matrix;
     }
 
     // zoom
@@ -178,9 +183,9 @@ void MousePos(GLFWwindow* window, double x, double y) {
         vec2 p = TransformScreenCoords(window, x, y);
 
         if(p.y>currenty){
-            view_matrix = translate(view_matrix,vec3(0.0f, 0.0f, 0.0f)); 
+            view_matrix = translate(view_matrix,vec3(0.0f, 0.0f, 1.0f));
         }else{
-            view_matrix = translate(view_matrix,vec3(-0.0f, -0.0f, -0.0f));
+            view_matrix = translate(view_matrix,vec3(-0.0f, -0.0f, -1.0f));
         }
 
         currenty = p.y;
