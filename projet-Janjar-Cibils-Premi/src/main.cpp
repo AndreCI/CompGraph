@@ -9,10 +9,11 @@
 
 #include "cube/cube.h"
 #include "grid/grid.h"
-
+#include "framebuffer.h"
 #include "trackball.h"
 
 Grid grid;
+FrameBuffer framebuffer;
 
 int window_width = 800;
 int window_height = 600;
@@ -97,7 +98,8 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
 void Init() {
     // sets background color
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
-    
+
+    GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
     grid.Init();
 
     // enable depth test.
@@ -124,8 +126,11 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const float time = glfwGetTime();
-
     // draw a quad on the ground.
+    framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //grid.DrawNoise();
+    framebuffer.Unbind();
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 

@@ -174,4 +174,21 @@ class Grid {
             glBindVertexArray(0);
             glUseProgram(0);
         }
+
+            glUseProgram(program_id_);
+            glBindVertexArray(vertex_array_id_);
+
+
 };
+/*
+texid =frqnebuffer init
+franebuffer:bind
+        noise drqz
+frqnebyffer unbind
+*/
+
+
+
+
+
+
