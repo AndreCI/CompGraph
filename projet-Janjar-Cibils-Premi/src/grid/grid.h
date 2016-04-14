@@ -14,7 +14,7 @@ class Grid {
         GLuint MVP_id_;                         // model, view, proj matrix ID
 
     public:
-        void Init() {
+        void Init(GLuint tex = -1) {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("grid_vshader.glsl",
                                                   "grid_fshader.glsl");
@@ -34,7 +34,7 @@ class Grid {
                 std::vector<GLuint> indices;
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
-                int M = 250;
+                int M = 512;
 
 
         GLfloat step = 2.0f/(M-1);
