@@ -4,6 +4,7 @@ in vec2 position;
 
 out vec2 uv;
 
+uniform sampler2D tex;
 uniform mat4 MVP;
 uniform float time;
 
@@ -14,7 +15,7 @@ void main() {
     // plane.
     // TODO 6: animate the height of the grid points as a sine function of the
     // 'time' and the position ('uv') within the grid.
-    float height = 0;
+    float height = (texture(tex,uv).r+texture(tex,uv).b+texture(tex,uv).g)/3;
     vec3 pos_3d = vec3(position.x, height, -position.y);
     gl_Position = MVP * vec4(pos_3d, 1.0);
 }
