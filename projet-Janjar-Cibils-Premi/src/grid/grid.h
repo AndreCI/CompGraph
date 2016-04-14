@@ -175,9 +175,11 @@ class Grid {
             glUseProgram(0);
         }
 
+        /*void DrawNoise(Gluint id) {
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
 
+        }*/
 
 };
 /*
