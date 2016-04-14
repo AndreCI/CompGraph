@@ -34,13 +34,13 @@ class Grid {
                 std::vector<GLuint> indices;
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
-                int grid_dim = 100;
+                int M = 250;
 
 
-		GLfloat step = 2.0f/(grid_dim-1);
+        GLfloat step = 2.0f/(M-1);
 
-		for(int i = 0;i<=grid_dim;++i){
-			for(int j = 0;j<=grid_dim;++j){
+        for(int i = 0;i<=M;++i){
+            for(int j = 0;j<=M;++j){
 			GLfloat x =i*(step)-1.0;
 			GLfloat y =j*(step)-1.0;
 			vertices.push_back(x); 
@@ -49,25 +49,21 @@ class Grid {
 		}	
 
 
-	}
-		int M = grid_dim;
-			for(int i = 0 ; i<grid_dim-1 ;++i){
-				for(int j = 0; j<grid_dim-1; ++j){
-				int p1 = (M*i)+j;
-				int p2 = (M*i)+j+M;
-				int p3 = (M*i)+j+M+1; 
-
-				int p4 = (M*i)+j+1;
+    }
+            for(int i = 0 ; i<M-1 ;++i){
+                for(int j = 0; j<M-1; ++j){
+                    int sommet1 = ((M+1)*i)+j;
+                    int sommet2 = ((M+1)*i)+j+M+1;
+                    int sommet3 = ((M+1)*i)+j+M+2;
 				
-				indices.push_back(p1);
-				indices.push_back(p4);
-				indices.push_back(p3);
+                    indices.push_back(sommet1);
+                    indices.push_back(sommet2);
+                    indices.push_back(sommet3);
 
-
-				
-				indices.push_back(p1);
-				indices.push_back(p2);
-				indices.push_back(p3);
+                    int sommet4 = ((M+1)*i)+j+1;
+                    indices.push_back(sommet1);
+                    indices.push_back(sommet4);
+                    indices.push_back(sommet3);
 				
 
 		}		
