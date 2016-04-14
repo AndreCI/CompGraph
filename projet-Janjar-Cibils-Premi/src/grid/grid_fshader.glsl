@@ -7,7 +7,8 @@ out float height;
 uniform sampler2D tex;
 
 void main() {
-    color = vec3(0.0,0.0,0.0);
+    color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
+
     /*TODO 1.2 : 3 Diffuse shading of the terrain in the fragment shader.
 You have calculate the normal at every position in the fragment shader.
 One way to do this is by using finite differences: you can find the gradient
