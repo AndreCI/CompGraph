@@ -15,7 +15,7 @@ class ScreenQuad {
 
     public:
         void Init(float screenquad_width, float screenquad_height,
-                  GLuint texture, GLuint velocity_texture) {
+                  GLuint texture) {
 
             // set screenquad size
             this->screenquad_width_ = screenquad_width;
@@ -83,13 +83,6 @@ class ScreenQuad {
             GLuint tex_id = glGetUniformLocation(program_id_, "colorTex");
             glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
 
-            this->texture_velocity_id_ = velocity_texture;
-            glBindTexture(GL_TEXTURE_2D, texture_velocity_id_);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-            GLuint velTex_id = glGetUniformLocation(program_id_, "velocityTex");
-            glUniform1i(velTex_id, 1 /*GL_TEXTURE1*/);
-
             glBindTexture(GL_TEXTURE_2D, 0);
 
             // to avoid the current object being polluted
@@ -104,7 +97,6 @@ class ScreenQuad {
             glDeleteProgram(program_id_);
             glDeleteVertexArrays(1, &vertex_array_id_);
             glDeleteTextures(1, &texture_id_);
-            glDeleteTextures(1, &texture_velocity_id_);
         }
 
         void UpdateSize(int screenquad_width, int screenquad_height) {
@@ -120,13 +112,15 @@ class ScreenQuad {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, texture_velocity_id_);
-
             // draw
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             glBindVertexArray(0);
             glUseProgram(0);
+        }
+
+        void DrawNoise(){
+            glUseProgram(program_id_);
+            glBindVertexArray(vertex_array_id_);
         }
 };
