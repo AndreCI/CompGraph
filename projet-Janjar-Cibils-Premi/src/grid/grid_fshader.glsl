@@ -4,6 +4,7 @@ in vec2 uv;
 
 out vec3 color;
 out float height;
+
 uniform sampler2D tex;
 
 void main() {
@@ -24,6 +25,4 @@ the neighboring pixels in the height map*/
     vec3 Ld = normalize(vec3(0.8,0.8,0.8));
 
     color = kd*normal*Ld;
-
-
 }
