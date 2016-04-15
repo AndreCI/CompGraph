@@ -22,11 +22,11 @@ the neighboring pixels in the height map*/
     //normal = normal a un point
     vec3 light_dir = normalize(vec3(2,10,10));
     //light_dir = direction de la lumiere
-    vec3 kd = texture(colorTex,uv).rgb;
+    vec3 kd = texture(tex,uv).rgb;
     //kd = couleur du matériel
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
-    color = kd ;//* dot(normal,light_dir) * Ld;
+    color = kd * dot(normal,light_dir) * Ld;
 
 }
