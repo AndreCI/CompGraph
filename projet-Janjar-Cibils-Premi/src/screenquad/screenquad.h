@@ -122,5 +122,13 @@ class ScreenQuad {
         void DrawNoise(){
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture_id_);
+
+            // draw
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            glBindVertexArray(0);
+            glUseProgram(0);
         }
 };
