@@ -102,8 +102,8 @@ void Init() {
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
     GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
-    grid.Init();
     screenquad.Init(window_width,window_height,noise_tex_id);
+    grid.Init();
     // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
