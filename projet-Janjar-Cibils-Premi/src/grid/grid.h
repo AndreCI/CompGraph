@@ -12,9 +12,11 @@ class Grid {
         GLuint texture_id_;                     // texture ID
         GLuint num_indices_;                    // number of vertices to render
         GLuint MVP_id_;                         // model, view, proj matrix ID
+        GLuint perlin_tex_id_;                  // texture perlin ID
+        GLuint vertex_buffer_object_;           // memory buffer
 
     public:
-        void Init(GLuint tex = -1) {
+        void Init(GLuint perlin_tex = -1) {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("grid_vshader.glsl",
                                                   "grid_fshader.glsl");
@@ -35,8 +37,11 @@ class Grid {
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
                 int M = 512;
-
-
+                //>>>>>>>>
+                // buffer
+                               glGenBuffers(1, &vertex_buffer_object_);
+                             glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
+                             //<<<<<<<
         GLfloat step = 2.0f/(M-1);
 
         for(int i = 0;i<=M;++i){
@@ -92,7 +97,31 @@ class Grid {
                                       ZERO_STRIDE, ZERO_BUFFER_OFFSET);
             }
 
-            // load texture
+            //>>>>>>>>
+            // texture coordinates
+                        {
+                            const GLfloat vertex_texture_coordinates[] = { /*V1*/ 0.0f, 0.0f,
+                                                                           /*V2*/ 1.0f, 0.0f,
+                                                                           /*V3*/ 0.0f, 1.0f,
+                                                                           /*V4*/ 1.0f, 1.0f};
+
+                            // buffer
+                            glGenBuffers(1, &vertex_buffer_object_);
+                            glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
+                            glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_texture_coordinates),
+                                         vertex_texture_coordinates, GL_STATIC_DRAW);
+
+                            // attribute
+                            GLuint vertex_texture_coord_id = glGetAttribLocation(program_id_,
+                                                                                 "vtexcoord");
+                            glEnableVertexAttribArray(vertex_texture_coord_id);
+                            glVertexAttribPointer(vertex_texture_coord_id, 2, GL_FLOAT,
+                                                  DONT_NORMALIZE, ZERO_STRIDE,
+                                                  ZERO_BUFFER_OFFSET);
+                        }
+            //<<<<<<<
+
+
             {
                 int width;
                 int height;
@@ -119,9 +148,15 @@ class Grid {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
                                  GL_RGBA, GL_UNSIGNED_BYTE, image);
                 }
+//>>>>>>>
+                perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
 
+                // texture uniforms
                 GLuint tex_id = glGetUniformLocation(program_id_, "tex");
                 glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
+                GLuint perlin_tex_id = glGetUniformLocation(program_id_, "colorTex");
+                glUniform1i(perlin_tex_id, 1 /*GL_TEXTURE1*/);
+//<<<<<<<<
 
                 // cleanup
                 glBindTexture(GL_TEXTURE_2D, 0);
@@ -144,6 +179,7 @@ class Grid {
             glDeleteVertexArrays(1, &vertex_array_id_);
             glDeleteProgram(program_id_);
             glDeleteTextures(1, &texture_id_);
+            glDeleteTextures(1, &perlin_tex_id_);
         }
 
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
@@ -156,6 +192,9 @@ class Grid {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
+            // bind textures
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, perlin_tex_id_);
             // setup MVP
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));
@@ -175,19 +214,7 @@ class Grid {
             glUseProgram(0);
         }
 
-        /*void DrawNoise(Gluint id) {
-            glUseProgram(program_id_);
-            glBindVertexArray(vertex_array_id_);
-
-        }*/
-
 };
-/*
-texid =frqnebuffer init
-franebuffer:bind
-        noise drqz
-frqnebyffer unbind
-*/
 
 
 
