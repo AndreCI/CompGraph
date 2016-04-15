@@ -46,5 +46,5 @@ float perlin(vec2 p, float dim) {
 }
 void main() {
 
-    color = perlin(uv,30);
+    color = perlin(uv,10);
 }

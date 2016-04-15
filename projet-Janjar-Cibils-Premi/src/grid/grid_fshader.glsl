@@ -7,6 +7,11 @@ in float height;
 
 uniform sampler2D colorTex;
 uniform sampler2D tex;
+const vec3 COLORS[3] = vec3[](
+  vec3(1.0,0,0),
+vec3(0,1.0,0),
+vec3(0,0,1.0)
+);
 
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
@@ -24,19 +29,34 @@ the neighboring pixels in the height map*/
     vec3 light_dir = normalize(vec3(10,10,10));
     //light_dir = direction de la lumiere
     vec3 kd = vec3(1,1,1);//texture(tex,uv).rgb;
-   if(height>0.8){
-        kd = vec3(255-height*(255-229),255,153+height*(204-153));
-    }else if(height>0.3){
-        kd=vec3(255-(height-0.3)/0.5*(255-204),255,153);
+    float borne_j_v = 0.2;
+    float borne_v = 0.5;
+    float borne_v_b = 0.6;
+    float borne_b = 0.9;
+    vec3 couleurTop = vec3(255,255,255);
+    vec3 couleurMid = vec3(1,122,1);
+    vec3 couleurBot = vec3(255,255,102);
+    if(height>borne_b){
+        kd = couleurTop;
+    }else if(height>borne_v_b){
+        kd = vec3(couleurTop.x-(couleurTop.x-couleurMid.x)*(borne_b-height)/(borne_b-borne_v_b),
+                  couleurTop.y-(couleurTop.y-couleurMid.y)*(borne_b-height)/(borne_b-borne_v_b),
+                  couleurTop.z-(couleurTop.z-couleurMid.z)*(borne_b-height)/(borne_b-borne_v_b));
+    }else if(height>borne_v){
+        kd = couleurMid;
+    }else if(height>borne_j_v){
+        kd = vec3(couleurMid.x-(couleurMid.x-couleurBot.x)*(borne_v-height)/(borne_v-borne_j_v),
+                  couleurMid.y-(couleurMid.y-couleurBot.y)*(borne_v-height)/(borne_v-borne_j_v),
+                  couleurMid.z-(couleurMid.z-couleurBot.z)*(borne_v-height)/(borne_v-borne_j_v));
     }else{
-        kd=vec3(255,255,153);
+        kd = couleurBot;
     }
-    kd = normalize(kd);
+    kd = kd/255;
    // kd = vec3(height,height,1-height);
 
     //kd = couleur du matériel
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
-    color = kd * dot(normal,light_dir) * Ld;
+    color = kd;//* dot(normal,light_dir) * Ld;
 }
