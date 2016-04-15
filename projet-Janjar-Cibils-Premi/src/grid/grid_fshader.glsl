@@ -28,4 +28,5 @@ the neighboring pixels in the height map*/
     //Ld = couleur du soleil
 
     color = kd ;//* dot(normal,light_dir) * Ld;
+
 }
