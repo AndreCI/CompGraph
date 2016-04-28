@@ -48,39 +48,41 @@ out vec3 color;
 uniform sampler2D permTexture;
 
 vec2 getRandomGradient(vec2 xy){
-   return vec2(cos(rand(xy)),(sin(rand(xy))));
+    float x = 8 * rand(xy);
+   return vec2(cos(x),sin(x));
 }
 float smoothInterpolation(float v){
-    return 6*v*v*v*v*v - 15*v*v*v*v + 10*v*v*v;//6*pow(v,5) - 15*pow(v,4) +10*pow(v,3);
+   return 6*v*v*v*v*v - 15*v*v*v*v + 10*v*v*v;//6*pow(v,5) - 15*pow(v,4) +10*pow(v,3);
+   // return v*v*v-v*v;
 }
 
 float mix(float x, float y, float al){
     return (1-al)*x+al*y;
 }
 
-vec2 perlinNoise(vec2 uv){
-    vec2 bl = floor(uv);
+float perlinNoise(vec2 pos){
+    vec2 bl = floor(pos);
     vec2 br = bl + vec2(1,0);
     vec2 ul = bl + vec2(0,1);
     vec2 ur = bl + vec2(1,1);
 
-    vec2 a = uv - bl;
-    vec2 b = uv - br;
-    vec2 c = uv - ul;
-    vec2 d = uv - ur;
+    vec2 a = pos - bl;
+    vec2 b = pos - br;
+    vec2 c = pos - ul;
+    vec2 d = pos - ur;
 
     float s = dot(getRandomGradient(bl),a);
     float t = dot(getRandomGradient(br),b);
     float u = dot(getRandomGradient(ul),c);
     float v = dot(getRandomGradient(ur),d);
 
-    float st = mix(s,t,smoothInterpolation(fract(uv.x)));
-    float uv_f = mix(u,v,smoothInterpolation(fract(uv.x)));
-   // return mix(st,uv_f,smoothInterpolation(fract(uv.y)));
-    return getRandomGradient(bl);
+    float st = mix(s,t,smoothInterpolation(fract(pos.x)));
+    float uv_f = mix(u,v,smoothInterpolation(fract(pos.x)));
+    return mix(st,uv_f,smoothInterpolation(fract(pos.y)));
+
 }
 
 void main() {
 
-    color = vec3(perlinNoise(uv*10)+0.5,0);
+    color = vec3(perlinNoise(uv*10)*0.5+0.5);
 }
