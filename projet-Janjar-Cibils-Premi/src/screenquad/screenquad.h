@@ -1,5 +1,6 @@
 #pragma once
 #include "icg_helper.h"
+#include <stdlib.h>
 
 class ScreenQuad {
 
