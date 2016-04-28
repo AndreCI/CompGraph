@@ -82,7 +82,16 @@ float perlinNoise(vec2 pos){
 
 }
 
+float fBm(vec2 pos, float h, float l, int octaves){
+    float v = 0;
+    for(int i =0; i<octaves;i++){
+        v+=perlinNoise(pos*10)*pow(l,-h*i);
+        pos *=l;
+    }
+    return v;
+}
+
 void main() {
 
-    color = vec3(perlinNoise(uv*10)*0.5+0.5);
+    color = vec3(fBm(uv,1,2,4));
 }
