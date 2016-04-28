@@ -47,8 +47,8 @@ in vec2 uv;
 out vec3 color;
 uniform sampler2D permTexture;
 
-vec2 getRandomGradient(vec2 xy){
-    float x = 8 * rand(xy);
+vec2 getRandomGradient(vec2 xy, float seed){
+    float x = seed * rand(xy);
    return vec2(cos(x),sin(x));
 }
 float smoothInterpolation(float v){
@@ -60,7 +60,7 @@ float mix(float x, float y, float al){
     return (1-al)*x+al*y;
 }
 
-float perlinNoise(vec2 pos){
+float perlinNoise(vec2 pos,float seed){
     vec2 bl = floor(pos);
     vec2 br = bl + vec2(1,0);
     vec2 ul = bl + vec2(0,1);
@@ -71,10 +71,10 @@ float perlinNoise(vec2 pos){
     vec2 c = pos - ul;
     vec2 d = pos - ur;
 
-    float s = dot(getRandomGradient(bl),a);
-    float t = dot(getRandomGradient(br),b);
-    float u = dot(getRandomGradient(ul),c);
-    float v = dot(getRandomGradient(ur),d);
+    float s = dot(getRandomGradient(bl, seed),a);
+    float t = dot(getRandomGradient(br, seed),b);
+    float u = dot(getRandomGradient(ul,seed),c);
+    float v = dot(getRandomGradient(ur,seed),d);
 
     float st = mix(s,t,smoothInterpolation(fract(pos.x)));
     float uv_f = mix(u,v,smoothInterpolation(fract(pos.x)));
@@ -82,16 +82,18 @@ float perlinNoise(vec2 pos){
 
 }
 
-float fBm(vec2 pos, float h, float l, int octaves){
+float fBm(vec2 pos, float h, float l, int octaves, float offset){
     float v = 0;
+    vec2 p = pos;
     for(int i =0; i<octaves;i++){
-        v+=perlinNoise(pos*10)*pow(l,-h*i);
-        pos *=l;
+        v += ((perlinNoise(p,10)+offset)*pow(l,-h*i));
+        p *=l;
+       // h-=0.2;
     }
     return v;
 }
 
-void main() {
 
-    color = vec3(fBm(uv,1,2,4));
+void main() {
+    color = vec3(fBm(uv*3,1.2,3.7,12,0.32));
 }
