@@ -129,10 +129,10 @@ void Display() {
 
     const float time = glfwGetTime();
     // draw a quad on the ground.
-    framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //framebuffer.Bind();
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
-    framebuffer.Unbind();
+   // framebuffer.Unbind();
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 

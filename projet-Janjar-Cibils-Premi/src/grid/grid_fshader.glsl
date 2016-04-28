@@ -53,10 +53,10 @@ the neighboring pixels in the height map*/
     }
     kd = kd/255;
    // kd = vec3(height,height,1-height);
-
+       kd=vec3(0.8,0.8,0.8);
     //kd = couleur du matériel
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
-    color = kd;//* dot(normal,light_dir) * Ld;
+    color = kd* dot(normal,light_dir) * Ld;
 }
