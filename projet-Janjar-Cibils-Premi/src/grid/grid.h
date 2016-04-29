@@ -36,18 +36,19 @@ class Grid {
                 std::vector<GLuint> indices;
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
-                int M = 512;
-                //>>>>>>>>
-                // buffer
-                               glGenBuffers(1, &vertex_buffer_object_);
-                             glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
-                             //<<<<<<<
-        GLfloat step = 2.0f/(M-1);
 
-        for(int i = 0;i<=M;++i){
-            for(int j = 0;j<=M;++j){
-			GLfloat x =i*(step)-1.0;
-			GLfloat y =j*(step)-1.0;
+                int nbretriangles = 256;
+
+
+              glGenBuffers(1, &vertex_buffer_object_);
+              glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
+
+        GLfloat step = 2.0f/(nbretriangles-1);
+
+        for( int i=0; i<=nbretriangles;++i ){
+            for(int j = 0;j<=nbretriangles;++j){
+            GLfloat x =i*(step)-1.0;
+            GLfloat y =j*(step)-1.0;
 			vertices.push_back(x); 
 			vertices.push_back(y);
 
@@ -55,17 +56,16 @@ class Grid {
 
 
     }
-            for(int i = 0 ; i<M-1 ;++i){
-                for(int j = 0; j<M-1; ++j){
-                    int sommet1 = ((M+1)*i)+j;
-                    int sommet2 = ((M+1)*i)+j+M+1;
-                    int sommet3 = ((M+1)*i)+j+M+2;
-				
+            for(int i = 0 ; i<nbretriangles-1 ;++i){
+                for(int j = 0; j<nbretriangles-1; ++j){
+
+                    int sommet1 = ((nbretriangles+1)*i)+j;
+                    int sommet3 = sommet1+nbretriangles+2;
+                    int sommet2 = sommet1+nbretriangles+1;
                     indices.push_back(sommet1);
                     indices.push_back(sommet2);
                     indices.push_back(sommet3);
-
-                    int sommet4 = ((M+1)*i)+j+1;
+                    int sommet4 = ((nbretriangles+1)*i)+j+1;
                     indices.push_back(sommet1);
                     indices.push_back(sommet4);
                     indices.push_back(sommet3);
@@ -205,7 +205,7 @@ class Grid {
             // draw
             // TODO 5: for debugging it can be helpful to draw only the wireframe.
             // You can do that by uncommenting the next line.
-            //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+           //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             // TODO 5: depending on how you set up your vertex index buffer, you
             // might have to change GL_TRIANGLE_STRIP to GL_TRIANGLES.
             glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);

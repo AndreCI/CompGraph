@@ -94,6 +94,10 @@ float fBm(vec2 pos, float h, float l, int octaves, float offset){
 }
 
 
+
 void main() {
     color = vec3(fBm(uv*3,1.2,3.7,12,0.32));
+
+   // color = 3.5*(vec3(fBm(uv,1,2,4)));
+
 }
