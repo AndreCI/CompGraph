@@ -39,7 +39,7 @@ class Grid {
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
 
-                int nbretriangles = 256;
+                int nbretriangles = 512;
 
 
               glGenBuffers(1, &vertex_buffer_object_);

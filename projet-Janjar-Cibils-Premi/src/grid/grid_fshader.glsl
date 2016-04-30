@@ -26,7 +26,7 @@ the neighboring pixels in the height map*/
     vec3 X = normalize(dFdx(pos));
     vec3 normal = (cross(X,Y));
     //normal = normal a un point
-    vec3 light_dir = normalize(vec3(10,10,10));
+    vec3 light_dir = normalize(vec3(10,10,5));
     //light_dir = direction de la lumiere
     vec3 kd = vec3(1,1,1);//texture(tex,uv).rgb;
     float borne_j_v = 0.2;
@@ -53,7 +53,7 @@ the neighboring pixels in the height map*/
     }
     kd = kd/255;
    // kd = vec3(height,height,1-height);
-       kd=vec3(0.8,0,0);
+       kd=vec3(0.9,0.9,0.9);
     //kd = couleur du matériel
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
