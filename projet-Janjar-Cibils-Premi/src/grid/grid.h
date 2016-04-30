@@ -15,6 +15,8 @@ class Grid {
         GLuint perlin_tex_id_;                  // texture perlin ID
         GLuint vertex_buffer_object_;           // memory buffer
 
+        GLuint perlin_tex_id;
+
     public:
         void Init(GLuint perlin_tex = -1) {
             // compile the shaders.
@@ -154,7 +156,7 @@ class Grid {
                 // texture uniforms
                 GLuint tex_id = glGetUniformLocation(program_id_, "tex");
                 glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
-                GLuint perlin_tex_id = glGetUniformLocation(program_id_, "colorTex");
+                perlin_tex_id = glGetUniformLocation(program_id_, "heightTex");
                 glUniform1i(perlin_tex_id, 1 /*GL_TEXTURE1*/);
 //<<<<<<<<
 
@@ -182,6 +184,7 @@ class Grid {
             glDeleteTextures(1, &perlin_tex_id_);
         }
 
+
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
                   const glm::mat4 &projection = IDENTITY_MATRIX) {
@@ -195,6 +198,7 @@ class Grid {
             // bind textures
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, perlin_tex_id_);
+
             // setup MVP
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));

@@ -133,6 +133,7 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
     framebuffer.Unbind();
+
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 
@@ -222,6 +223,40 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+    switch(key){
+        case 'O':
+            cout << "H increased (fBm)" << endl;
+            screenquad.updateH(true);
+             break;
+        case 'P':
+        cout << "H decreased (fBm)" << endl;
+        screenquad.updateH(false);
+        break;
+    case 'I':
+        cout << "Lacunarity increased (fBm)" << endl;
+        screenquad.updateLacunarity(true);
+         break;
+    case 'U':
+    cout << "Lacunarity decreased (fBm)" << endl;
+    screenquad.updateLacunarity(false);
+    break;case 'M':
+        cout << "Octaves increased (fBm)" << endl;
+        screenquad.updateOctaves(true);
+         break;
+    case 'L':
+    cout << "Octaves decreased (fBm)" << endl;
+    screenquad.updateOctaves(false);
+    break;
+    case 'K':
+        cout << "Offset increased (fBm)" << endl;
+        screenquad.updateOffset(true);
+         break;
+    case 'J':
+    cout << "Offset decreased (fBm)" << endl;
+    screenquad.updateOffset(false);
+    break;
+    }
+
 }
 
 

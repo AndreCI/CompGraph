@@ -5,7 +5,7 @@ in vec2 position;
 out vec2 uv;
 out float height;
 
-uniform sampler2D colorTex;
+uniform sampler2D heightTex;
 uniform mat4 MVP;
 uniform float time;
 
@@ -16,7 +16,7 @@ void main() {
 The vertex shader samples the height map texture an displaces the vertices according to the height.
 (reuse/adapt from HW3)*/
 
-   height = ((texture(colorTex,uv).x + texture(colorTex,uv).y)/2);
+   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
 
   // height =(texture(colorTex,uv).x + texture(colorTex,uv).y);
 
