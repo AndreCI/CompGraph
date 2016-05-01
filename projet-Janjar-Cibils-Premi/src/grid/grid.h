@@ -18,7 +18,7 @@ class Grid {
         GLuint perlin_tex_id;
 
     public:
-        void Init(GLuint perlin_tex = -1) {
+        void Init(GLuint perlin_tex = -1, int nbr_triangle = 256) {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("grid_vshader.glsl",
                                                   "grid_fshader.glsl");
@@ -39,7 +39,7 @@ class Grid {
                 // TODO 5: make a triangle grid with dimension 100x100.
                 // always two subsequent entries in 'vertices' form a 2D vertex position.
 
-                int nbretriangles = 256;
+                int nbretriangles = nbr_triangle;
 
 
               glGenBuffers(1, &vertex_buffer_object_);
