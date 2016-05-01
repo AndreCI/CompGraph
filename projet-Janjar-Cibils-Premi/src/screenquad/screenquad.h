@@ -14,7 +14,6 @@ class ScreenQuad {
         GLuint lacunarity_id;
         GLuint octaves_id;
         GLuint offset_id;
-        GLuint water_id;
         GLuint time_id;
 
         float screenquad_width_;
@@ -26,7 +25,7 @@ class ScreenQuad {
 
     public:
         void Init(float screenquad_width, float screenquad_height,
-                  GLuint texture,bool water) {
+                  GLuint texture) {
 
 
 
@@ -102,14 +101,6 @@ class ScreenQuad {
                 glUniform1f(offset_id,offset_value);
 
                  time_id = glGetUniformLocation(program_id_, "time");
-
-                water_id = glGetUniformLocation(program_id_, "water_bool");
-
-                if(water){
-                    glUniform1f(water_id,1);
-                }else{
-                    glUniform1f(water_id,0);
-                }
 
             }
 
@@ -195,38 +186,17 @@ class ScreenQuad {
             glUseProgram(0);
         }
 
-        void DrawNoise(){
+        void DrawNoise(float time){
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
-            glUniform1f(water_id,0);
-            glUniform1f(time_id,0);
-
+            glUniform1f(time_id,time);
 
             glUniform1f(h_id,h_value);
             glUniform1f(lacunarity_id,lacunarity_value);
             glUniform1i(octaves_id,octaves_value);
             glUniform1f(offset_id,offset_value);
-            // draw
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-            glBindVertexArray(0);
-            glUseProgram(0);
-        }
-
-        void DrawWaterNoise(float time){
-            glUseProgram(program_id_);
-            glBindVertexArray(vertex_array_id_);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture_id_);
-            glUniform1f(water_id,1);
-            glUniform1f(time_id,time);
-
-            glUniform1f(h_id,h_value);
-            glUniform1f(lacunarity_id,lacunarity_value);
-            glUniform1i(octaves_id,1);
-            glUniform1f(offset_id,10);
             // draw
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

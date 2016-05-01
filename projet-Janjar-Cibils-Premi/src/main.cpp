@@ -14,7 +14,6 @@
 #include "screenquad/screenquad.h"
 
 Grid grid;
-Grid water;
 FrameBuffer framebuffer;
 FrameBuffer water_framebuffer;
 ScreenQuad screenquad;
@@ -105,11 +104,9 @@ void Init() {
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
     GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
-    grid.Init(noise_tex_id,256);
-    GLuint water_tex_id = water_framebuffer.Init(window_width, window_height);
-    water.Init(water_tex_id,512);
+    grid.Init(noise_tex_id);
 
-    screenquad.Init(window_width,window_height,noise_tex_id,0);
+    screenquad.Init(window_width,window_height,noise_tex_id);
     // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
@@ -137,16 +134,10 @@ void Display() {
     // draw a quad on the ground.
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screenquad.DrawNoise();
+    screenquad.DrawNoise(time);
     framebuffer.Unbind();
 
-    water_framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screenquad.DrawWaterNoise(time);
-    water_framebuffer.Unbind();
 
-
-    water.Draw(time,trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 

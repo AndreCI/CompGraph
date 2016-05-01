@@ -71,17 +71,18 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
 
 
 void main() {
-    if(water_bool==0){
-    color = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-    }else{
-        float globalSpeed = 0.2;
-       vec3 temp = vec3(waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
-         temp += vec3(waterNoise(uv*4,65,40,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,1.6,time)); //vague moyenne a contre courant
-         temp += vec3(waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
-         temp+=vec3(0.5);
-       //   temp += vec3(waterNoise(uv*20,7,2,getRandomGradient(vec2(0,1),7),3,4,time));
-       //  temp += vec3(waterNoise(uv*30,12,17,getRandomGradient(vec2(1,-1),9),4,13));
-        // temp += vec3(waterNoise(uv*30,12,17,getRandomGradient(vec2(1,-1),9),4,13));
-         color = temp/8;
-    }
+
+     float globalSpeed = 0.2;
+     float water = (waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
+     water += (waterNoise(uv*4,65,40,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,1.6,time)); //vague moyenne a contre courant
+     water += (waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
+     water+=(0.5);
+     float fbm = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+     if(fbm>water){
+         color = vec3(fbm);
+     }else{
+         color = vec3(water);
+     }
+
+
 }
