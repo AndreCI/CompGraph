@@ -86,8 +86,10 @@ void Init() {
     // sets background color
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
-    grid.Init(noise_tex_id,framebuffer.getRiverTextureId());
+    GLuint noise_tex_id;
+    GLuint river_tex_id;
+    std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
+    grid.Init(noise_tex_id, river_tex_id);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
     // enable depth test.
@@ -107,6 +109,20 @@ void Init() {
     // scaling matrix to scale the cube down to a reasonable size.
 
     quad_model_matrix = translate(mat4(1.0f), vec3(0.0f, -0.25f, 0.0f));
+
+    framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+     screenquad.Draw();
+    framebuffer.Unbind();
+
+ /*   framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    framebuffer.Unbind();*/
+
+
+
 }
 
 // gets called for every frame.
@@ -114,17 +130,6 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
     // draw a quad on the ground.
-
-    framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screenquad.DrawRiver();
-    framebuffer.Unbind();
-
-    framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screenquad.DrawNoise();
-    framebuffer.Unbind();
-
 
     cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);

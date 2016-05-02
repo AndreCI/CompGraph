@@ -1,10 +1,10 @@
 #version 330
 
 in vec2 uv;
-in float isRiver;
 
 out vec3 color;
 in float height;
+in float isRiver;
 
 uniform sampler2D colorTex;
 uniform sampler2D tex;
@@ -64,7 +64,7 @@ void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
     vec3 texture_color = getColorFromTexture();
     if(isRiver==1){
-        texture_color=vec3(0,0,1);
+        texture_color = vec3(0,0,1);
     }
     color = texture_color;
 }

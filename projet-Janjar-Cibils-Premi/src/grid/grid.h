@@ -248,18 +248,18 @@ class Grid {
                 perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
 
 
-                glUseProgram(program_id_);
+              //  glUseProgram(program_id_);
 
                 // texture uniforms
                 perlin_tex_id = glGetUniformLocation(program_id_, "heightTex");
                 glUniform1i(perlin_tex_id, 1 /*GL_TEXTURE1*/);
 
-                river_tex_id_ = (perlin_tex==-1)? texture_id_ : river_tex;
+                river_tex_id_ = river_tex;
                 glUseProgram(program_id_);
 
                 // texture uniforms
                 river_tex_id = glGetUniformLocation(program_id_, "riverTex");
-                glUniform1i(river_tex_id, 6 /*GL_TEXTURE1*/);
+                glUniform1i(river_tex_id, 6 /*GL_TEXTURE6*/);
 
                 //<<<<<<<<
 

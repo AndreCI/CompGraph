@@ -4,9 +4,9 @@ uniform float h_fBm;
 uniform float lacunarity_fBm;
 uniform int octaves_fBm;
 uniform float offset_fBm;
-uniform float river;
 
-out vec3 color;
+layout (location = 0) out vec3 heightMap;
+layout (location = 1) out vec3 riverMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -62,7 +62,7 @@ vec2 getNextRiverPoint(vec2 pos){
     float height_ = 10;
     float cu_height = 10;
     vec2 cu_pos;
-    float corr = 5;
+    float corr = 30;
     for(float i=-1;i<1;i+=0.5){
         for(float j = -1; j<1; j+=0.5){
             cu_pos = vec2(pos.x+i/corr, pos.y+j/corr);
@@ -80,22 +80,22 @@ vec2 getNextRiverPoint(vec2 pos){
 
 
 void main() {
-    if(river==0){
-        color = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-    }else{
-       color = vec3(0);
-    }
+
+        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        float ret = 0;
+       vec2 river = vec2(0.5,0.5);
+       for(int i =0; i<20; i++){
+           if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
+                ret=1;
+
+           } river = getNextRiverPoint(river);
+       }
+       riverMap=vec3(ret);
+
 
    // color = 3.5*(vec3(fBm(uv,1,2,4)));
 
 }
-
-
-
-
-
-
-
 
 
 
