@@ -7,6 +7,11 @@ in float height;
 
 uniform sampler2D colorTex;
 uniform sampler2D tex;
+uniform sampler2D texture_snow;
+uniform sampler2D texture_rock;
+uniform sampler2D texture_grass;
+uniform sampler2D texture_sand;
+
 const vec3 COLORS[3] = vec3[](
   vec3(1.0,0,0),
 vec3(0,1.0,0),
@@ -58,5 +63,10 @@ the neighboring pixels in the height map*/
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
-    color = kd* dot(normal,light_dir) * Ld;
+    if(height>0.5){
+    color = texture(texture_sand,uv).rgb;
+    }else{
+
+        color = texture(texture_snow,uv).rgb;
+    }
 }

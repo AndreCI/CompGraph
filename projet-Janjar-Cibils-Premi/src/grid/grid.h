@@ -16,6 +16,10 @@ class Grid {
         GLuint vertex_buffer_object_;           // memory buffer
 
         GLuint perlin_tex_id;
+        GLuint texture_sand_id;
+        GLuint texture_rock_id;
+        GLuint texture_grass_id;
+        GLuint texture_snow_id;
 
     public:
         void Init(GLuint perlin_tex = -1) {
@@ -125,44 +129,130 @@ class Grid {
 
 
             {
+
+
+
                 int width;
                 int height;
                 int nb_component;
-                string filename = "grid_texture.tga";
                 // set stb_image to have the same coordinates as OpenGL
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                string filename ="sand.jpg";
                 stbi_set_flip_vertically_on_load(1);
-                unsigned char* image = stbi_load(filename.c_str(), &width,
+                unsigned char* image_sand = stbi_load(filename.c_str(), &width,
                                                  &height, &nb_component, 0);
 
-                if(image == nullptr) {
+                if(image_sand == nullptr) {
                     throw(string("Failed to load texture"));
                 }
 
-                glGenTextures(1, &texture_id_);
-                glBindTexture(GL_TEXTURE_2D, texture_id_);
+                glGenTextures(1, &texture_sand_id);
+                glBindTexture(GL_TEXTURE_2D, texture_sand_id);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
                 if(nb_component == 3) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
-                                 GL_RGB, GL_UNSIGNED_BYTE, image);
+                                 GL_RGB, GL_UNSIGNED_BYTE, image_sand);
                 } else if(nb_component == 4) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                                 GL_RGBA, GL_UNSIGNED_BYTE, image);
+                                 GL_RGBA, GL_UNSIGNED_BYTE, image_sand);
                 }
+                GLuint texture_sand = glGetUniformLocation(program_id_,"texture_sand");
+                glUniform1i(texture_sand,4 /*GL_TEXTURE4*/);
+
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                filename ="rock.jpg";
+                stbi_set_flip_vertically_on_load(1);
+                unsigned char* image_rock = stbi_load(filename.c_str(), &width,
+                                                 &height, &nb_component, 0);
+
+                if(image_rock == nullptr) {
+                    throw(string("Failed to load texture"));
+                }
+                glGenTextures(1, &texture_rock_id);
+                glBindTexture(GL_TEXTURE_2D, texture_rock_id);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+                if(nb_component == 3) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                                 GL_RGB, GL_UNSIGNED_BYTE, image_rock);
+                } else if(nb_component == 4) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, image_rock);
+                }
+                GLuint texture_rock = glGetUniformLocation(program_id_,"texture_rock");
+                glUniform1i(texture_rock,3 /*GL_TEXTURE3*/);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+                filename ="grass.jpg";
+                stbi_set_flip_vertically_on_load(1);
+                unsigned char* image_grass = stbi_load(filename.c_str(), &width,
+                                                 &height, &nb_component, 0);
+
+                if(image_grass == nullptr) {
+                    throw(string("Failed to load texture"));
+                }
+                glGenTextures(1,&texture_grass_id);
+                glBindTexture(GL_TEXTURE_2D, texture_grass_id);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+                if(nb_component == 3) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                                 GL_RGB, GL_UNSIGNED_BYTE, image_grass);
+                } else if(nb_component == 4) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, image_grass);
+                }
+
+                GLuint texture_grass = glGetUniformLocation(program_id_,"texture_grass");
+                glUniform1i(texture_grass,4 /*GL_TEXTURE4*/);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+                filename ="snow.jpg";
+                stbi_set_flip_vertically_on_load(1);
+                unsigned char* image_snow = stbi_load(filename.c_str(), &width,
+                                                 &height, &nb_component, 0);
+
+                if(image_snow == nullptr) {
+                    throw(string("Failed to load texture"));
+                }
+
+                glGenTextures(1,&texture_snow_id);
+                glBindTexture(GL_TEXTURE_2D, texture_snow_id);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+                if(nb_component == 3) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                                 GL_RGB, GL_UNSIGNED_BYTE, image_snow);
+                } else if(nb_component == 4) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, image_snow);
+                }
+               // glBindTexture(GL_TEXTURE_2D, 0);
+                 //               stbi_image_free(image_snow);
+
+               GLuint texture_snow = glGetUniformLocation(program_id_,"texture_snow");
+                glUniform1i(texture_snow,5 /*GL_TEXTURE5*/);
+
 //>>>>>>>
                 perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
 
+                glUseProgram(program_id_);
+
                 // texture uniforms
-                GLuint tex_id = glGetUniformLocation(program_id_, "tex");
-                glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
                 perlin_tex_id = glGetUniformLocation(program_id_, "heightTex");
                 glUniform1i(perlin_tex_id, 1 /*GL_TEXTURE1*/);
-//<<<<<<<<
 
-                // cleanup
-                glBindTexture(GL_TEXTURE_2D, 0);
-                stbi_image_free(image);
+                //<<<<<<<<
+
             }
 
             // other uniforms
@@ -173,6 +263,8 @@ class Grid {
             glUseProgram(0);
         }
 
+
+
         void Cleanup() {
             glBindVertexArray(0);
             glUseProgram(0);
@@ -182,6 +274,10 @@ class Grid {
             glDeleteProgram(program_id_);
             glDeleteTextures(1, &texture_id_);
             glDeleteTextures(1, &perlin_tex_id_);
+            glDeleteTextures(1, &texture_sand_id);
+            glDeleteTextures(1, &texture_grass_id);
+            glDeleteTextures(1, &texture_rock_id);
+            glDeleteTextures(1, &texture_snow_id);
         }
 
 
@@ -195,9 +291,20 @@ class Grid {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
-            // bind textures
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, perlin_tex_id_);
+
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, texture_grass_id);
+
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, texture_rock_id);
+
+            glActiveTexture(GL_TEXTURE4);
+            glBindTexture(GL_TEXTURE_2D, texture_sand_id);
+
+            glActiveTexture(GL_TEXTURE5);
+            glBindTexture(GL_TEXTURE_2D, texture_snow_id);
 
             // setup MVP
             glm::mat4 MVP = projection*view*model;
