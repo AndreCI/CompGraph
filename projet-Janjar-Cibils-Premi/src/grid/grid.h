@@ -213,7 +213,7 @@ class Grid {
                 GLuint texture_grass = glGetUniformLocation(program_id_,"texture_grass");
                 glUniform1i(texture_grass,4 /*GL_TEXTURE4*/);
 
-                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
                 filename ="snow.jpg";
                 stbi_set_flip_vertically_on_load(1);
@@ -274,6 +274,10 @@ class Grid {
             glDeleteProgram(program_id_);
             glDeleteTextures(1, &texture_id_);
             glDeleteTextures(1, &perlin_tex_id_);
+            glDeleteTextures(1, &texture_sand_id);
+            glDeleteTextures(1, &texture_grass_id);
+            glDeleteTextures(1, &texture_rock_id);
+            glDeleteTextures(1, &texture_snow_id);
         }
 
 
