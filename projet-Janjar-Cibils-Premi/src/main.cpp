@@ -11,7 +11,8 @@
 #include "framebuffer.h"
 #include "trackball.h"
 #include "screenquad/screenquad.h"
-
+#include "cube/cube.h"
+Cube cube;
 Grid grid;
 FrameBuffer framebuffer;
 ScreenQuad screenquad;
@@ -88,6 +89,7 @@ void Init() {
     GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
     grid.Init(noise_tex_id);
     screenquad.Init(window_width,window_height,noise_tex_id);
+    cube.Init();
     // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
@@ -116,7 +118,7 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
     framebuffer.Unbind();
-
+    cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 
