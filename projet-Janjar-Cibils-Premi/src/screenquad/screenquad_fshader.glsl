@@ -1,7 +1,4 @@
 #version 330 core
-
-
-
 in vec2 uv;
 uniform float h_fBm;
 uniform float lacunarity_fBm;
@@ -9,7 +6,6 @@ uniform int octaves_fBm;
 uniform float offset_fBm;
 
 out vec3 color;
-uniform sampler2D permTexture;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 

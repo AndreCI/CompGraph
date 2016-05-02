@@ -160,7 +160,7 @@ class Grid {
                                  GL_RGBA, GL_UNSIGNED_BYTE, image_sand);
                 }
                 GLuint texture_sand = glGetUniformLocation(program_id_,"texture_sand");
-                glUniform1i(texture_sand,4 /*GL_TEXTURE4*/);
+                glUniform1i(texture_sand,2 /*GL_TEXTURE2*/);
 
 
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -295,13 +295,13 @@ class Grid {
             glBindTexture(GL_TEXTURE_2D, perlin_tex_id_);
 
             glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, texture_grass_id);
+            glBindTexture(GL_TEXTURE_2D, texture_sand_id);
 
             glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, texture_rock_id);
 
             glActiveTexture(GL_TEXTURE4);
-            glBindTexture(GL_TEXTURE_2D, texture_sand_id);
+            glBindTexture(GL_TEXTURE_2D, texture_grass_id);
 
             glActiveTexture(GL_TEXTURE5);
             glBindTexture(GL_TEXTURE_2D, texture_snow_id);

@@ -7,7 +7,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "cube/cube.h"
 #include "grid/grid.h"
 #include "framebuffer.h"
 #include "trackball.h"
@@ -68,21 +67,6 @@ mat4 PerspectiveProjection(float fovy, float aspect, float near, float far) {
 }
 
 mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
-    // we need a function that converts from world coordinates into camera coordiantes.
-    //
-    // cam coords to world coords is given by:
-    // X_world = R * X_cam + eye
-    //
-    // inverting it leads to:
-    //
-    // X_cam = R^T * X_world - R^T * eye
-    //
-    // or as a homogeneous matrix:
-    // [ r_00 r_10 r_20 -r_0*eye
-    //   r_01 r_11 r_21 -r_1*eye
-    //   r_02 r_12 r_22 -r_2*eye
-    //      0    0    0        1 ]
-
     vec3 z_cam = normalize(eye - center);
     vec3 x_cam = normalize(cross(up, z_cam));
     vec3 y_cam = cross(z_cam, x_cam);
@@ -126,7 +110,6 @@ void Init() {
 // gets called for every frame.
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     const float time = glfwGetTime();
     // draw a quad on the ground.
     framebuffer.Bind();
@@ -205,13 +188,11 @@ void SetupProjection(GLFWwindow* window, int width, int height) {
 
     glViewport(0, 0, window_width, window_height);
 
-    // TODO 1: Use a perspective projection instead;
      projection_matrix = PerspectiveProjection(45.0f,
                                                (GLfloat)window_width / window_height,
                                                0.1f, 100.0f);
      GLfloat top = 1.0f;
-        GLfloat right = (GLfloat)window_width / window_height * top;
-    //    projection_matrix = OrthographicProjection(-right, right, -top, top, -10.0, 10.0f);
+     GLfloat right = (GLfloat)window_width / window_height * top;
 
 }
 

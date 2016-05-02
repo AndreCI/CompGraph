@@ -37,10 +37,10 @@ the neighboring pixels in the height map*/
     float borne_j_v = 0.2;
     float borne_v = 0.5;
     float borne_v_b = 0.6;
-    float borne_b = 0.9;
-    vec3 couleurTop = vec3(255,255,255);
-    vec3 couleurMid = vec3(1,122,1);
-    vec3 couleurBot = vec3(255,255,102);
+    float borne_b = 0.8;
+    vec3 couleurTop = texture(texture_snow,uv).rgb;
+    vec3 couleurMid = texture(texture_rock,uv).rgb;
+    vec3 couleurBot = texture(texture_sand,uv).rgb;
     if(height>borne_b){
         kd = couleurTop;
     }else if(height>borne_v_b){
@@ -56,17 +56,12 @@ the neighboring pixels in the height map*/
     }else{
         kd = couleurBot;
     }
-    kd = kd/255;
+    //kd = kd/255;
    // kd = vec3(height,height,1-height);
-       kd=vec3(0.9,0.9,0.9);
+       //kd=vec3(0.9,0.9,0.9);
     //kd = couleur du matériel
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
-    if(height>0.5){
-    color = texture(texture_sand,uv).rgb;
-    }else{
-
-        color = texture(texture_snow,uv).rgb;
-    }
+    color =kd;
 }
