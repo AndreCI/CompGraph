@@ -14,6 +14,7 @@ class ScreenQuad {
         GLuint lacunarity_id;
         GLuint octaves_id;
         GLuint offset_id;
+        GLuint river_id;
 
         float screenquad_width_;
         float screenquad_height_;
@@ -84,6 +85,8 @@ class ScreenQuad {
                 glVertexAttribPointer(vertex_texture_coord_id, 2, GL_FLOAT,
                                       DONT_NORMALIZE, ZERO_STRIDE,
                                       ZERO_BUFFER_OFFSET);
+
+                river_id= glGetUniformLocation(program_id_,"river");
 
                 h_id= glGetUniformLocation(program_id_,"h_fBm");
                 lacunarity_id = glGetUniformLocation(program_id_,"lacunarity_fBm");
@@ -180,6 +183,25 @@ class ScreenQuad {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
+            glUniform1f(river_id,0);
+            glUniform1f(h_id,h_value);
+            glUniform1f(lacunarity_id,lacunarity_value);
+            glUniform1i(octaves_id,octaves_value);
+            glUniform1f(offset_id,offset_value);
+            // draw
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            glBindVertexArray(0);
+            glUseProgram(0);
+        }
+
+        void DrawRiver(){
+            glUseProgram(program_id_);
+            glBindVertexArray(vertex_array_id_);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture_id_);
+
+            glUniform1f(river_id,1);
             glUniform1f(h_id,h_value);
             glUniform1f(lacunarity_id,lacunarity_value);
             glUniform1i(octaves_id,octaves_value);

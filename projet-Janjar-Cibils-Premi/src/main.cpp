@@ -87,7 +87,7 @@ void Init() {
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
     GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
-    grid.Init(noise_tex_id);
+    grid.Init(noise_tex_id,framebuffer.getRiverTextureId());
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
     // enable depth test.
@@ -114,10 +114,18 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
     // draw a quad on the ground.
+
+    framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    screenquad.DrawRiver();
+    framebuffer.Unbind();
+
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
     framebuffer.Unbind();
+
+
     cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }

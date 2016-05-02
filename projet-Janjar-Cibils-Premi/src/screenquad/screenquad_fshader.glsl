@@ -4,6 +4,7 @@ uniform float h_fBm;
 uniform float lacunarity_fBm;
 uniform int octaves_fBm;
 uniform float offset_fBm;
+uniform float river;
 
 out vec3 color;
 
@@ -55,11 +56,48 @@ float fBm(vec2 pos, float h, float l, int octaves, float offset){
     return v;
 }
 
+vec2 getNextRiverPoint(vec2 pos){
+    float righti = 0;
+    float rightj = 0;
+    float height_ = 10;
+    float cu_height = 10;
+    vec2 cu_pos;
+    float corr = 5;
+    for(float i=-1;i<1;i+=0.5){
+        for(float j = -1; j<1; j+=0.5){
+            cu_pos = vec2(pos.x+i/corr, pos.y+j/corr);
+            cu_height = fBm(cu_pos*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm);
+            if(cu_height<height_){
+                height_ = cu_height;
+                righti = i;
+                rightj = j;
+            }
+        }
+    }
+    return vec2(pos.x+righti/corr,pos.y+rightj/corr);
+}
+
 
 
 void main() {
-    color = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+    if(river==0){
+        color = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+    }else{
+       color = vec3(0);
+    }
 
    // color = 3.5*(vec3(fBm(uv,1,2,4)));
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
