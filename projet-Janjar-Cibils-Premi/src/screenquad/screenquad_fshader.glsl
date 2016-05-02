@@ -7,7 +7,6 @@ uniform float h_fBm;
 uniform float lacunarity_fBm;
 uniform int octaves_fBm;
 uniform float offset_fBm;
-uniform float water_bool;
 uniform float time;
 
 out vec3 color;
@@ -72,11 +71,13 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
 
 void main() {
 
-     float globalSpeed = 0.2;
+     float globalSpeed = 0.3;
      float water = (waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
      water += (waterNoise(uv*4,65,40,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,1.6,time)); //vague moyenne a contre courant
      water += (waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
      water+=(0.5);
+     water = water /7;
+
      float fbm = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
      if(fbm>water){
          color = vec3(fbm);
