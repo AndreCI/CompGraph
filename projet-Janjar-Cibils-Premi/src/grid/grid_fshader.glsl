@@ -63,5 +63,10 @@ the neighboring pixels in the height map*/
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
 
+    if(height>0.5){
     color = texture(texture_sand,uv).rgb;
+    }else{
+
+        color = texture(texture_snow,uv).rgb;
+    }
 }
