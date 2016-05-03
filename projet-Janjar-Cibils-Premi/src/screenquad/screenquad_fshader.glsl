@@ -86,37 +86,35 @@ vec2 getNextRiverPoint(vec2 pos){
     return vec2(pos.x+righti/corr,pos.y+rightj/corr);
 }
 
+float distance(vec2 a, vec2 b){
+    return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+}
 
+float isRiver(vec2 pos){
+    float ret = 0;
+   vec2 river = vec2(0.5,0.5);
+   vec2 newRiver;
+   float epsilon=0.02;
+
+   if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
+        ret=1;
+   }
+  for(int i =0; i<8; i++){
+
+       newRiver = getNextRiverPoint(river);
+         if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
+           ret=1;
+       }
+
+        river = newRiver;
+    }
+
+   return ret;
+}
 
 void main() {
-
-
-      //  heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-        float ret = 0;
-       vec2 river = vec2(0.5,0.5);
-       for(int i =0; i<10; i++){
-           if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
-                ret=1;
-
-           } river = getNextRiverPoint(river);
-       }
-       riverMap=vec3(ret);
-
-
-     float globalSpeed = 0.3;
-     float water = (waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
-     water += (waterNoise(uv*4,65,40,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,1.6,time)); //vague moyenne a contre courant
-     water += (waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
-     water+=(0.5);
-     water = water /7;
-
-     float fbm = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-     if(fbm>water){
-         heightMap = vec3(fbm);
-     }else{
-         heightMap = vec3(water);
-     }
-
+        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        riverMap = vec3(isRiver(uv));
 
 }
 

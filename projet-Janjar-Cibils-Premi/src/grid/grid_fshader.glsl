@@ -4,7 +4,7 @@ in vec2 uv;
 
 out vec3 color;
 in float height;
-in float isRiver;
+in float isWater;
 
 uniform sampler2D colorTex;
 uniform sampler2D tex;
@@ -12,6 +12,7 @@ uniform sampler2D texture_snow;
 uniform sampler2D texture_rock;
 uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
+uniform sampler2D texture_water;
 
 const vec3 COLORS[3] = vec3[](
   vec3(1.0,0,0),
@@ -60,8 +61,8 @@ vec3 getColorFromTexture(){
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
     vec3 texture_color = getColorFromTexture();
-    if(isRiver==1){
-        texture_color = vec3(0,0,1);
+    if(isWater==1){
+        texture_color = texture(texture_water,uv).rgb;
     }
     color = texture_color;
 }

@@ -22,6 +22,7 @@ class Grid {
         GLuint texture_rock_id;
         GLuint texture_grass_id;
         GLuint texture_snow_id;
+        GLuint texture_water_id;
 
     public:
 
@@ -246,8 +247,35 @@ class Grid {
                 glUniform1i(texture_snow,5 /*GL_TEXTURE5*/);
 
 //>>>>>>>
-                perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+                filename ="water.jpg";
+                stbi_set_flip_vertically_on_load(1);
+                unsigned char* image_water = stbi_load(filename.c_str(), &width,
+                                                 &height, &nb_component, 0);
+
+                if(image_water == nullptr) {
+                    throw(string("Failed to load texture"));
+                }
+
+                glGenTextures(1,&texture_water_id);
+                glBindTexture(GL_TEXTURE_2D, texture_water_id);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+                if(nb_component == 3) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                                 GL_RGB, GL_UNSIGNED_BYTE, image_water);
+                } else if(nb_component == 4) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, image_water);
+                }
+
+               GLuint texture_water = glGetUniformLocation(program_id_,"texture_water");
+                glUniform1i(texture_water,6 /*GL_TEXTURE6*/);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+                perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
 
               //  glUseProgram(program_id_);
 
@@ -260,7 +288,7 @@ class Grid {
 
                 // texture uniforms
                 river_tex_id = glGetUniformLocation(program_id_, "riverTex");
-                glUniform1i(river_tex_id, 6 /*GL_TEXTURE6*/);
+                glUniform1i(river_tex_id, 7 /*GL_TEXTURE7*/);
 
                 //<<<<<<<<
 
@@ -289,6 +317,7 @@ class Grid {
             glDeleteTextures(1, &texture_grass_id);
             glDeleteTextures(1, &texture_rock_id);
             glDeleteTextures(1, &texture_snow_id);
+            glDeleteTextures(1, &texture_water_id);
         }
 
 
@@ -318,6 +347,9 @@ class Grid {
             glBindTexture(GL_TEXTURE_2D, texture_snow_id);
 
             glActiveTexture(GL_TEXTURE6);
+            glBindTexture(GL_TEXTURE_2D, texture_water_id);
+
+            glActiveTexture(GL_TEXTURE7);
             glBindTexture(GL_TEXTURE_2D, river_tex_id_);
 
             // setup MVP
