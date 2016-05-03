@@ -104,19 +104,6 @@ class ScreenQuad {
 
             }
 
-            // load/Assign textures
-            this->texture_id_ = texture;
-            glBindTexture(GL_TEXTURE_2D, texture_id_);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            GLuint tex_id = glGetUniformLocation(program_id_, "colorTex");
-            glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            // to avoid the current object being polluted
-            glBindVertexArray(0);
-            glUseProgram(0);
         }
 
         void updateH(bool increase){
@@ -184,23 +171,6 @@ class ScreenQuad {
 
             glBindVertexArray(0);
             glUseProgram(0);
-        }
+        }      
 
-        void DrawNoise(float time){
-            glUseProgram(program_id_);
-            glBindVertexArray(vertex_array_id_);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture_id_);
-            glUniform1f(time_id,time);
-
-            glUniform1f(h_id,h_value);
-            glUniform1f(lacunarity_id,lacunarity_value);
-            glUniform1i(octaves_id,octaves_value);
-            glUniform1f(offset_id,offset_value);
-            // draw
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-            glBindVertexArray(0);
-            glUseProgram(0);
-        }
 };

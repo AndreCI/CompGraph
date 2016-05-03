@@ -7,12 +7,12 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "cube/cube.h"
 #include "grid/grid.h"
 #include "framebuffer.h"
 #include "trackball.h"
 #include "screenquad/screenquad.h"
-
+#include "cube/cube.h"
+Cube cube;
 Grid grid;
 FrameBuffer framebuffer;
 FrameBuffer water_framebuffer;
@@ -70,21 +70,6 @@ mat4 PerspectiveProjection(float fovy, float aspect, float near, float far) {
 }
 
 mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
-    // we need a function that converts from world coordinates into camera coordiantes.
-    //
-    // cam coords to world coords is given by:
-    // X_world = R * X_cam + eye
-    //
-    // inverting it leads to:
-    //
-    // X_cam = R^T * X_world - R^T * eye
-    //
-    // or as a homogeneous matrix:
-    // [ r_00 r_10 r_20 -r_0*eye
-    //   r_01 r_11 r_21 -r_1*eye
-    //   r_02 r_12 r_22 -r_2*eye
-    //      0    0    0        1 ]
-
     vec3 z_cam = normalize(eye - center);
     vec3 x_cam = normalize(cross(up, z_cam));
     vec3 y_cam = cross(z_cam, x_cam);
@@ -103,10 +88,12 @@ void Init() {
     // sets background color
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    GLuint noise_tex_id = framebuffer.Init(window_width,window_height);
-    grid.Init(noise_tex_id);
-
+    GLuint noise_tex_id;
+    GLuint river_tex_id;
+    std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
+    grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
+    cube.Init();
     // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
@@ -124,20 +111,29 @@ void Init() {
     // scaling matrix to scale the cube down to a reasonable size.
 
     quad_model_matrix = translate(mat4(1.0f), vec3(0.0f, -0.25f, 0.0f));
+
+    framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+     screenquad.Draw();
+    framebuffer.Unbind();
+
+ /*   framebuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    framebuffer.Unbind();*/
+
+
+
 }
 
 // gets called for every frame.
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     const float time = glfwGetTime();
     // draw a quad on the ground.
-    framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    screenquad.DrawNoise(time);
-    framebuffer.Unbind();
 
-
+    cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
 }
 
@@ -209,13 +205,11 @@ void SetupProjection(GLFWwindow* window, int width, int height) {
 
     glViewport(0, 0, window_width, window_height);
 
-    // TODO 1: Use a perspective projection instead;
      projection_matrix = PerspectiveProjection(45.0f,
                                                (GLfloat)window_width / window_height,
                                                0.1f, 100.0f);
      GLfloat top = 1.0f;
-        GLfloat right = (GLfloat)window_width / window_height * top;
-    //    projection_matrix = OrthographicProjection(-right, right, -top, top, -10.0, 10.0f);
+     GLfloat right = (GLfloat)window_width / window_height * top;
 
 }
 

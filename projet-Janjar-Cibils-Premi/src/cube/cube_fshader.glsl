@@ -1,7 +1,7 @@
 #version 330
-
+in vec3 uv;
 out vec3 color;
-
+uniform samplerCube texture_sky;
 // color buffer
 const vec3 COLOR[6] = vec3[](
     vec3(0.0, 0.0, 1.0),
@@ -12,5 +12,5 @@ const vec3 COLOR[6] = vec3[](
     vec3(1.0, 1.0, 0.0));
 
 void main() {
-    color = COLOR[gl_PrimitiveID / 2];
+    color = texture(texture_sky,uv).rgb;
 }

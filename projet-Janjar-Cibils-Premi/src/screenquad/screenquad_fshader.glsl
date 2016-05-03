@@ -1,7 +1,4 @@
 #version 330 core
-
-
-
 in vec2 uv;
 uniform float h_fBm;
 uniform float lacunarity_fBm;
@@ -9,8 +6,8 @@ uniform int octaves_fBm;
 uniform float offset_fBm;
 uniform float time;
 
-out vec3 color;
-//uniform sampler2D permTexture;
+layout (location = 0) out vec3 heightMap;
+layout (location = 1) out vec3 riverMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -68,8 +65,43 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
 }
 
 
+vec2 getNextRiverPoint(vec2 pos){
+    float righti = 0;
+    float rightj = 0;
+    float height_ = 10;
+    float cu_height = 10;
+    vec2 cu_pos;
+    float corr = 30;
+    for(float i=-1;i<1;i+=0.5){
+        for(float j = -1; j<1; j+=0.5){
+            cu_pos = vec2(pos.x+i/corr, pos.y+j/corr);
+            cu_height = fBm(cu_pos*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm);
+            if(cu_height<height_){
+                height_ = cu_height;
+                righti = i;
+                rightj = j;
+            }
+        }
+    }
+    return vec2(pos.x+righti/corr,pos.y+rightj/corr);
+}
+
+
 
 void main() {
+
+
+      //  heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        float ret = 0;
+       vec2 river = vec2(0.5,0.5);
+       for(int i =0; i<10; i++){
+           if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
+                ret=1;
+
+           } river = getNextRiverPoint(river);
+       }
+       riverMap=vec3(ret);
+
 
      float globalSpeed = 0.3;
      float water = (waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
@@ -80,10 +112,15 @@ void main() {
 
      float fbm = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
      if(fbm>water){
-         color = vec3(fbm);
+         heightMap = vec3(fbm);
      }else{
-         color = vec3(water);
+         heightMap = vec3(water);
      }
 
 
 }
+
+
+
+
+
