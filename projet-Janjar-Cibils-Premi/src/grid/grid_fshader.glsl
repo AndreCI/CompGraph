@@ -21,15 +21,8 @@ vec3(0,0,1.0)
 );
 
 
-vec3 getColorFromTexture(){
-    vec3 pos = (vec3(uv.x,uv.y,height));
-    vec3 Y = normalize(dFdy(pos));
-    vec3 X = normalize(dFdx(pos));
-    vec3 normal = (cross(X,Y));
-    //normal = normal a un point
-    vec3 light_dir = normalize(vec3(1,1,5));
-    //light_dir = direction de la lumiere
-    vec3 kd = vec3(1,1,1);//texture(tex,uv).rgb;
+vec3 get_kd_fBm(){
+    vec3 kd = vec3(1,1,1);
     float borne_j_v = 0.2;
     float borne_v = 0.5;
     float borne_v_b = 0.6;
@@ -37,6 +30,7 @@ vec3 getColorFromTexture(){
     vec3 couleurTop = texture(texture_snow,uv).rgb;
     vec3 couleurMid = texture(texture_rock,uv).rgb;
     vec3 couleurBot = texture(texture_sand,uv).rgb;
+
     if(height>borne_b){
         kd = couleurTop;
     }else if(height>borne_v_b){
@@ -52,17 +46,37 @@ vec3 getColorFromTexture(){
     }else{
         kd = couleurBot;
     }
+
+    return kd;
+}
+
+vec3 getColorFrom_kd(vec3 kd){
     //kd = couleur du matériel
+    vec3 pos = (vec3(uv.x,uv.y,height));
+    vec3 Y = normalize(dFdy(pos));
+    vec3 X = normalize(dFdx(pos));
+    vec3 normal = (cross(X,Y));
+    //normal = normale a un point(uv)
+    vec3 light_dir = normalize(vec3(1,1,5));
+    //light_dir = direction de la lumiere
     vec3 Ld = normalize(vec3(1,1,1));
     //Ld = couleur du soleil
-    return kd;//* dot(normal,light_dir)*Ld;
+    return kd * dot(normal,light_dir) * Ld;
+}
+
+vec3 get_kd_water(vec3 texture_to_mix){
+    if(isWater==1){
+        return (texture(texture_water,uv)).rgb;//.rgb,texture_to_mix,0.5);
+    }else{
+        return (texture(texture_grass,uv)).rgb;//.rgb,texture_to_mix,0.5);
+    }
 }
 
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
-    vec3 texture_color = getColorFromTexture();
-    if(isWater==1){
-        texture_color = texture(texture_water,uv).rgb;
+    vec3 kd_fBm = get_kd_fBm();
+    if(isWater!=0){
+        kd_fBm = get_kd_water(kd_fBm);
     }
-    color = texture_color;
+    color = kd_fBm;
 }

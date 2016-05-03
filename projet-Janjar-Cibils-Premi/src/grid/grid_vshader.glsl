@@ -10,8 +10,20 @@ uniform sampler2D heightTex;
 uniform mat4 MVP;
 uniform float time;
 
+bool isNextToLand_f(vec2 pos){
+    float corr = 10;
+    for(int i=-1;i<1;i++){
+        for(int j=-1;j<1;j++){
+            if(texture(riverTex,uv+vec2(i/corr,j/corr)).x==0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
+
 vec2 getRandomGradient(vec2 xy, float seed){
     float x = seed * rand(xy);
    return vec2(sin(x),cos(x));
@@ -32,19 +44,22 @@ The vertex shader samples the height map texture an displaces the vertices accor
 (reuse/adapt from HW3)*/
 
 
-    float globalSpeed = 0.3;
-    float water = (waterNoise(uv,60,80,getRandomGradient(vec2(1,1),5),8*globalSpeed,1,time)); //Grosse vague de fond
-    water += (waterNoise(uv*4,65,40,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,1.6,time)); //vague moyenne a contre courant
+  /*  float globalSpeed = 1;
+    //float water = (waterNoise(uv,25,10,getRandomGradient(vec2(1,1),5),8*globalSpeed,6,time)); //Grosse vague de fond
+    float water = (waterNoise(uv*4,15,20,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,4,time)); //vague moyenne a contre courant
     water += (waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
-    water+=(0.5);
-    water = water/8;
+    water+=(0.6);
+    water = water/16;*/
 
+   float water = 0.2;
     bool waterDefined = false;
    height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
    if(height<water){
        height = (water);
        isWater=1;
-       waterDefined=true;
+       waterDefined=true;    
+   }else if(height-0.2<water){
+        isWater=2;
    }
 
     if(texture(riverTex,uv).x==1){
@@ -55,6 +70,8 @@ The vertex shader samples the height map texture an displaces the vertices accor
           isWater=0;
         }
     }
+   // height = water;
+    //isWater = 1;
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
     gl_Position = MVP * vec4(pos_3d, 1.0);
