@@ -90,9 +90,9 @@ float distance(vec2 a, vec2 b){
     return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
 
-float isRiver(vec2 pos){
+float isOnThisRiver(vec2 pos, vec2 head){
     float ret = 0;
-   vec2 river = vec2(0.5,0.5);
+   vec2 river = head;
    vec2 newRiver;
    float epsilon=0.02;
 
@@ -109,6 +109,15 @@ float isRiver(vec2 pos){
         river = newRiver;
     }
 
+   return ret;
+}
+
+float isRiver(vec2 pos){
+    float ret = 0;
+    ret = isOnThisRiver(pos,vec2(0.5,0.5));
+    if(ret==0){
+    //    ret=isOnThisRiver(pos,vec2(0.75,-0.25));
+    }
    return ret;
 }
 

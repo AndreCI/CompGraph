@@ -63,7 +63,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
    }
 
     if(texture(riverTex,uv).x==1){
-        height  = height +water/6;
+        height  = height -water/6;
         isWater=1;
     }else{
         if(!waterDefined){

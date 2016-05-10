@@ -320,6 +320,10 @@ class Grid {
             glDeleteTextures(1, &texture_water_id);
         }
 
+        float getHeight(){
+            return 0;
+        }
+
 
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,

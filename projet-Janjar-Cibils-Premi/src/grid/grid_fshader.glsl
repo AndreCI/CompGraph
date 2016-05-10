@@ -2,7 +2,8 @@
 
 in vec2 uv;
 
-out vec3 color;
+layout (location = 0) out vec3 color;
+layout (location = 1) out float currentHeight;
 in float height;
 in float isWater;
 
@@ -66,9 +67,12 @@ vec3 getColorFrom_kd(vec3 kd){
 
 vec3 get_kd_water(vec3 texture_to_mix){
     if(isWater==1){
-        return (texture(texture_water,uv)).rgb;//.rgb,texture_to_mix,0.5);
+        vec3 grass_ = texture(texture_grass,uv).rgb;
+        return mix(grass_,(texture(texture_water,uv)).rgb,0.9);//.rgb,texture_to_mix,0.5);
     }else{
-        return (texture(texture_grass,uv)).rgb;//.rgb,texture_to_mix,0.5);
+        vec3 grass_ = texture(texture_grass,uv).rgb;
+//        return mix(grass_,texture_to_mix,0.8);
+         return grass_;
     }
 }
 
@@ -78,5 +82,6 @@ void main() {
     if(isWater!=0){
         kd_fBm = get_kd_water(kd_fBm);
     }
-    color = kd_fBm;
+    color = (kd_fBm);
+    currentHeight = height;
 }
