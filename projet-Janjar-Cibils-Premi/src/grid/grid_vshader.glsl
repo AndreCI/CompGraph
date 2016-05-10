@@ -7,6 +7,7 @@ out float height;
 
 uniform sampler2D heightTex;
 uniform mat4 MVP;
+mat4 scale;
 uniform float time;
 
 void main() {
@@ -21,5 +22,14 @@ The vertex shader samples the height map texture an displaces the vertices accor
   // height =(texture(colorTex,uv).x + texture(colorTex,uv).y);
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
-    gl_Position = MVP * vec4(pos_3d, 1.0);
+
+
+
+    // setup MVP
+    scale[0][0] = 3.0f;
+    scale[1][1] = 3.0f;
+    scale[2][2] = 3.0f;
+    scale[3][3] = 1.0f;
+
+    gl_Position = MVP*scale * vec4(pos_3d, 1.0);
 }
