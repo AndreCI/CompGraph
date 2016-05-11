@@ -71,7 +71,7 @@ vec3 get_kd_water(vec3 texture_to_mix){
         return mix(grass_,(texture(texture_water,uv)).rgb,0.9);//.rgb,texture_to_mix,0.5);
     }else{
         vec3 grass_ = texture(texture_grass,uv).rgb;
-//        return mix(grass_,texture_to_mix,0.8);
+        return mix(grass_,texture_to_mix,0.8);
          return grass_;
     }
 }
