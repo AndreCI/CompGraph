@@ -106,7 +106,7 @@ void Init() {
     // applied in a rotated coordinate frame.
     // uncomment lower line to achieve this.
     eye_ = vec3(-2.0f, 0.0f, -2.0f);
-    center_ = vec3(0.0f, 0.0f, 0.0f);
+    center_ = vec3(0.0f, 1.0f, 0.0f);
             up_ = vec3(0.0f, 4.0f, 0.0f);
     theta = 3.1415/4;
     float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
@@ -225,12 +225,12 @@ void moveView(float direction){
     }else if(direction==2){
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
         theta = theta+0.02;
-        center_ = vec3(eye_.x + r*cos(theta),0,eye_.z+r*sin(theta));
+        center_ = vec3(eye_.x + r*cos(theta),1,eye_.z+r*sin(theta));
        // center_ = center_+ vec3(-0.1f, 0.0f, 0.0f);
     }else if(direction==3){
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
         theta = theta-0.02;
-        center_ = vec3(eye_.x + r*cos(theta),0,eye_.z+r*sin(theta));
+        center_ = vec3(eye_.x + r*cos(theta),1,eye_.z+r*sin(theta));
     }
 
     up_ = vec3(0.0f, 1.0f, 0.0f);
