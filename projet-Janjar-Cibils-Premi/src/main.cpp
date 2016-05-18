@@ -39,6 +39,8 @@ GLfloat currenty ;
 
 Trackball trackball;
 
+float *heightMap; //calloc the right number
+
 
 mat4 OrthographicProjection(float left, float right, float bottom,
                             float top, float near, float far) {
@@ -126,9 +128,18 @@ void Init() {
 
     quad_model_matrix = translate(mat4(1.0f), vec3(0.0f, -0.25f, 0.0f));
 
+    GLint textureWidth, textureHeight;
+    int bytes;
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight);
+    bytes = textureWidth*textureHeight;
+    *heightMap = (float*)malloc(bytes);
+
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      screenquad.Draw();
+     glGetTexImage(GL_TEXTURE_2D,0,GL_RED,GL_FLOAT,&heightMap);
+    // glReadPixels(0.5,0.5,1,1,GL_RED,GL_FLOAT,&data);
     framebuffer.Unbind();
 }
 
