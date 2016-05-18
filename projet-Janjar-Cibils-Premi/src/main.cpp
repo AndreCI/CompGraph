@@ -39,7 +39,18 @@ GLfloat currenty ;
 
 Trackball trackball;
 
-float heightMap[650*450]; //650*450 is terrible but fuck it
+struct heightMap{
+    float BottomLeft[30000];
+    float BottomMid[30000];
+    float BottomRight[30000];
+    float MidLeft[30000];
+    float MidMid[30000];
+    float MidRight[30000];
+    float UpLeft[30000];
+    float UpMid[30000];
+    float UpRight[30000];
+
+} heightMap;
 
 
 mat4 OrthographicProjection(float left, float right, float bottom,
@@ -132,8 +143,9 @@ void Init() {
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      screenquad.Draw();
-     glReadPixels(0,0,650,450,GL_RED,GL_FLOAT,heightMap);
+     glReadPixels(0,0,650,1,GL_RED,GL_FLOAT,heightMap.BottomLeft);
     framebuffer.Unbind();
+    cout << heightMap.BottomLeft[500] <<endl;
 }
 
 // gets called for every frame.
