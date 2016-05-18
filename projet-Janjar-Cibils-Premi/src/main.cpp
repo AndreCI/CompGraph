@@ -118,13 +118,13 @@ void Display() {
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight);
     bytes = textureWidth*textureHeight;
-    float *pixels = (float*)malloc(200);
-    float data[200];
+    float *pixels = (float*)malloc(270);
+    float data[65536];
 
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
-    glReadPixels(0,0,10,10,GL_RED,GL_FLOAT, data);
+    glReadPixels(0,0,255,255,GL_RED,GL_FLOAT, &data);
     framebuffer.Unbind();
     //glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, pixels);
 
