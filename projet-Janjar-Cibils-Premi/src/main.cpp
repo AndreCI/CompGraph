@@ -79,7 +79,7 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     vec3 x_cam = normalize(cross(up, z_cam));
     vec3 y_cam = cross(z_cam, x_cam);
 
-    //glReadPixels();
+
     mat3 R(x_cam, y_cam, z_cam);
     R = transpose(R);
 
@@ -251,7 +251,7 @@ void moveView(float direction){
 
     up_ = vec3(0.0f, 1.0f, 0.0f);
 
-    view_matrix = LookAt(eye_,
+     view_matrix = LookAt(eye_,
                          center_,
                          up_);
 }
