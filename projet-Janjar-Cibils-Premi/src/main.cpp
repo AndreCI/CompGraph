@@ -110,7 +110,7 @@ void Init() {
     GLuint noise_tex_id;
     GLuint river_tex_id;
     std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
-    grid.Init(noise_tex_id, river_tex_id,256);
+    grid.Init(noise_tex_id, river_tex_id,512);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
     // enable depth test.

@@ -122,9 +122,8 @@ float isRiver(vec2 pos){
 }
 
 void main() {
-        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        heightMap = vec3(fBm(uv*4,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
         riverMap = vec3(isRiver(uv));
-
 }
 
 
