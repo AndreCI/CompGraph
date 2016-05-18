@@ -118,17 +118,17 @@ void Display() {
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth);
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight);
     bytes = textureWidth*textureHeight;
-    float *pixels = (float*)malloc(bytes);
-    float data;
+    float *pixels = (float*)malloc(200);
+    float data[200];
 
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
-    glReadPixels(0.5,0.5,1,1,GL_RED,GL_FLOAT,&data);
+    glReadPixels(0,0,10,10,GL_RED,GL_FLOAT, data);
     framebuffer.Unbind();
-    glGetTexImage(GL_TEXTURE_2D, 0,  GL_RED, GL_FLOAT, pixels);
+    //glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, pixels);
 
-    cout<< *(pixels+144) << " "<< data<<endl;
+    cout<< data[0] << " "<< textureWidth << " "<<textureHeight<<endl;
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
     free(pixels);
 }
