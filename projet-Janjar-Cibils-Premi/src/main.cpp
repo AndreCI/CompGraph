@@ -39,19 +39,17 @@ GLfloat currenty ;
 
 Trackball trackball;
 
-struct heightMap{
-    float BottomLeft[30000];
-    float BottomMid[30000];
-    float BottomRight[30000];
-    float MidLeft[30000];
-    float MidMid[30000];
-    float MidRight[30000];
-    float UpLeft[30000];
-    float UpMid[30000];
-    float UpRight[30000];
 
-} heightMap;
+float heightMap[65536];
 
+float getHeight(float x, float y){
+    if(x<-1.0f || x>1.0f || y<-1.0f || y>1.0f){
+        return -1.0f;
+    }
+    int newx = floor((x+1)/2);
+    int newy = floor((y+1)/2);
+    return heightMap[newx+newy*255];
+}
 
 mat4 OrthographicProjection(float left, float right, float bottom,
                             float top, float near, float far) {
@@ -143,9 +141,9 @@ void Init() {
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      screenquad.Draw();
-     glReadPixels(0,0,650,1,GL_RED,GL_FLOAT,heightMap.BottomLeft);
+     glReadPixels(0,0,255,255,GL_RED,GL_FLOAT,heightMap);
     framebuffer.Unbind();
-    cout << heightMap.BottomLeft[500] <<endl;
+    cout << heightMap[0] <<endl;
 }
 
 // gets called for every frame.
@@ -265,8 +263,9 @@ void moveView(float direction){
         center_ = vec3(eye_.x + v.x*r*cos(theta_up), eye_.y + r*sin(theta_up),eye_.z + v.z*r*cos(theta_up));
     }
 
+    eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z),eye_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
-
+    cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
      view_matrix = LookAt(eye_,
                          center_,
                          up_);
