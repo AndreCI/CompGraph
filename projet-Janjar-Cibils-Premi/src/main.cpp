@@ -24,6 +24,7 @@ int window_height = 600;
 using namespace glm;
 
 float theta;
+float theta_up;
 vec3 eye_;
 vec3 center_;
 vec3 up_;
@@ -78,6 +79,7 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     vec3 x_cam = normalize(cross(up, z_cam));
     vec3 y_cam = cross(z_cam, x_cam);
 
+    //glReadPixels();
     mat3 R(x_cam, y_cam, z_cam);
     R = transpose(R);
 
@@ -105,15 +107,17 @@ void Init() {
     // looks straight down the -z axis. Otherwise the trackball's rotation gets
     // applied in a rotated coordinate frame.
     // uncomment lower line to achieve this.
-    eye_ = vec3(-2.0f, 0.0f, -2.0f);
+    eye_ = vec3(-0.5f, 1.0f, -0.5f);
     center_ = vec3(0.0f, 1.0f, 0.0f);
-            up_ = vec3(0.0f, 4.0f, 0.0f);
+    up_ = vec3(0,1,0);
     theta = 3.1415/4;
+    theta_up = -3.1415/4;
     float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
     center_ = vec3(eye_.x + r*cos(theta),0,eye_.z+r*sin(theta));
     view_matrix = LookAt(eye_,
                          center_,
-                         up_);
+                        up_);
+
 //     view_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -4.0f));
 
     trackball_matrix = IDENTITY_MATRIX;
@@ -216,21 +220,33 @@ void SetupProjection(GLFWwindow* window, int width, int height) {
 
 
 void moveView(float direction){
-    if(direction==0){
+    //WASD QE is assumed with swiss keyboard
+    if(direction==0){ //W
         vec3 dir = normalize(center_- eye_);
          eye_ = eye_+dir*vec3(0.1);
-    }else if(direction==1){
+    }else if(direction==1){ //S
         vec3 dir = normalize(eye_ - center_);
          eye_ = eye_+dir*vec3(0.1);
-    }else if(direction==2){
-        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
+    }else if(direction==2){ //A
+        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
         theta = theta+0.02;
-        center_ = vec3(eye_.x + r*cos(theta),1,eye_.z+r*sin(theta));
-       // center_ = center_+ vec3(-0.1f, 0.0f, 0.0f);
-    }else if(direction==3){
-        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.y-center_.y)*(eye_.y-center_.y) + (eye_.z - center_.z)*(eye_.z - center_.z));
+        center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
+    }else if(direction==3){ //D
+        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
         theta = theta-0.02;
-        center_ = vec3(eye_.x + r*cos(theta),1,eye_.z+r*sin(theta));
+        center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
+    }else if(direction==4){ //Q
+        float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        theta_up = theta_up + 0.02;
+        vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
+        center_ = vec3(eye_.x + v.x*r*cos(theta_up), eye_.y + r*sin(theta_up),eye_.z + v.z*r*cos(theta_up));
+    }else if(direction==5){ //E
+        float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        theta_up = theta_up - 0.02;
+        vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
+        center_ = vec3(eye_.x + v.x*r*cos(theta_up), eye_.y + r*sin(theta_up),eye_.z + v.z*r*cos(theta_up));
     }
 
     up_ = vec3(0.0f, 1.0f, 0.0f);
@@ -312,6 +328,14 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     case 'D':
         cout<<"Moving right"<<endl;
         moveView(2);
+        break;
+    case 'Q':
+        cout<<"Looking Up"<<endl;
+        moveView(4);
+        break;
+    case 'E':
+        cout<<"Looking Down"<<endl;
+        moveView(5);
         break;
     }
 

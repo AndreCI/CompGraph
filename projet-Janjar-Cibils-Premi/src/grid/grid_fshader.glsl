@@ -83,6 +83,6 @@ void main() {
     if(isWater!=0){
         kd_fBm = get_kd_water(kd_fBm);
     }
-    color = getColorFrom_kd(kd_fBm);
+    color = (kd_fBm);
     currentHeight = height;
 }

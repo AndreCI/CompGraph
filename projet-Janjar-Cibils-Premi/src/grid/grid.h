@@ -142,7 +142,7 @@ class Grid {
                 // set stb_image to have the same coordinates as OpenGL
 
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                string filename ="sand.jpg";
+                string filename ="lava.jpg";
                 stbi_set_flip_vertically_on_load(1);
                 unsigned char* image_sand = stbi_load(filename.c_str(), &width,
                                                  &height, &nb_component, 0);
@@ -168,7 +168,7 @@ class Grid {
 
 
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                filename ="rock.jpg";
+                filename ="mars.jpg";
                 stbi_set_flip_vertically_on_load(1);
                 unsigned char* image_rock = stbi_load(filename.c_str(), &width,
                                                  &height, &nb_component, 0);
@@ -219,7 +219,7 @@ class Grid {
 
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                filename ="snow.jpg";
+                filename ="snow_mars.jpg";
                 stbi_set_flip_vertically_on_load(1);
                 unsigned char* image_snow = stbi_load(filename.c_str(), &width,
                                                  &height, &nb_component, 0);
@@ -249,7 +249,7 @@ class Grid {
 //>>>>>>>
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                filename ="water.jpg";
+                filename ="lava_.jpg";
                 stbi_set_flip_vertically_on_load(1);
                 unsigned char* image_water = stbi_load(filename.c_str(), &width,
                                                  &height, &nb_component, 0);
