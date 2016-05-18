@@ -46,9 +46,11 @@ float getHeight(float x, float y){
     if(x<-1.0f || x>1.0f || y<-1.0f || y>1.0f){
         return -1.0f;
     }
-    int newx = floor((x+1)/2);
-    int newy = floor((y+1)/2);
-    return heightMap[newx+newy*255];
+    int newx = floor(255*(x+1)/2);
+    int newy = floor(255*(y+1)/2);
+    cout << newx << " " << newy << " " << heightMap[newx+255*newy] << endl;
+    cout << x << " " << y << endl;
+    return heightMap[newx+255*newy];
 }
 
 mat4 OrthographicProjection(float left, float right, float bottom,
@@ -236,11 +238,16 @@ void SetupProjection(GLFWwindow* window, int width, int height) {
 void moveView(float direction){
     //WASD QE is assumed with swiss keyboard
     if(direction==0){ //W
-        vec3 dir = normalize(center_- eye_);
-         eye_ = eye_+dir*vec3(0.1);
+        vec2 ce = normalize(vec2(center_.x - eye_.x,center_.z - eye_.z));
+        vec3 dir = vec3(ce.x,0,ce.y);
+         eye_ = eye_+dir*vec3(0.05);
+         center_ = center_ + dir*vec3(0.05);
     }else if(direction==1){ //S
-        vec3 dir = normalize(eye_ - center_);
-         eye_ = eye_+dir*vec3(0.1);
+        vec2 ce = normalize(vec2(eye_.x - center_.x,eye_.z - center_.z));
+        vec3 dir = vec3(ce.x,0,ce.y);
+        // vec3 dir = normalize(eye_ - center_);
+         eye_ = eye_+dir*vec3(0.05);
+         center_ = center_ + dir*vec3(0.05);
     }else if(direction==2){ //A
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
         theta = theta+0.02;
@@ -263,7 +270,8 @@ void moveView(float direction){
         center_ = vec3(eye_.x + v.x*r*cos(theta_up), eye_.y + r*sin(theta_up),eye_.z + v.z*r*cos(theta_up));
     }
 
-    eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z),eye_.z);
+    eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
+    center_ = vec3(center_.x,0.5f , center_.z); //getHeight(center_.x, center_.z)
     up_ = vec3(0.0f, 1.0f, 0.0f);
     cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
      view_matrix = LookAt(eye_,
