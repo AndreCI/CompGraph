@@ -17,7 +17,8 @@ Grid grid;
 FrameBuffer framebuffer;
 FrameBuffer water_framebuffer;
 ScreenQuad screenquad;
-
+float theta;
+float theta_up;
 int window_width = 800;
 int window_height = 800;
 
@@ -29,7 +30,9 @@ mat4 projection_matrix;
 mat4 view_matrix;
 mat4 trackball_matrix;
 mat4 old_trackball_matrix;
-
+vec3 eye_;
+vec3 center_;
+vec3 up_;
 mat4 quad_model_matrix;
 
 GLfloat currenty ;
@@ -86,6 +89,67 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     return look_at;
 }
 
+vec3 bezierCurve(vec3 P0 ,float time) {
+    float x = 5*cos(time/2);
+    float y = 4.5+cos(time);
+    float z = 10*sin(time/2);
+    return vec3(x,y,z);
+}
+
+vec3 changeCenter(vec3 d) {
+    return vec3(fmod(d.x+0.5,2),fmod(d.y-0.2,2),d.z);
+}
+
+void parametricTranfo(vec3 pos,float time) {
+   vec3 bc = bezierCurve(pos,time);
+   vec3 center = center_;
+   center = changeCenter(center);
+   view_matrix = lookAt(bc,center_,up_);
+}
+
+void moveView(float direction){
+    //WASD QE is assumed with swiss keyboard
+    if(direction==0){ //W
+        vec2 ce = normalize(vec2(center_.x - eye_.x,center_.z - eye_.z));
+        vec3 dir = vec3(ce.x,0,ce.y);
+         eye_ = eye_+dir*vec3(0.05);
+         center_ = center_ + dir*vec3(0.05);
+    }else if(direction==1){ //S
+        vec2 ce = normalize(vec2(eye_.x - center_.x,eye_.z - center_.z));
+        vec3 dir = vec3(ce.x,0,ce.y);
+        // vec3 dir = normalize(eye_ - center_);
+         eye_ = eye_+dir*vec3(0.05);
+         center_ = center_ + dir*vec3(0.05);
+    }else if(direction==2){ //A
+        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
+        theta = theta+0.02;
+        center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
+    }else if(direction==3){ //D
+        float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
+        theta = theta-0.02;
+        center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
+    }else if(direction==4){ //Q
+        float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        theta_up = theta_up + 0.02;
+        vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
+        center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
+    }else if(direction==5){ //E
+        float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
+        theta_up = theta_up - 0.02;
+        vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
+        center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
+    }
+
+    center_ = vec3(center_.x,0.5f , center_.z); //getHeight(center_.x, center_.z)
+    up_ = vec3(0.0f, 1.0f, 0.0f);
+    cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
+     view_matrix = LookAt(eye_,
+                         center_,
+                         up_);
+}
+
 int getHeight(float x, float y){
     float lowerbound = -1;
     float upperbound = 3;
@@ -133,14 +197,23 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
     }
 }
 
-
 void Init() {
     // sets background color
-    glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
-
     GLuint noise_tex_id;
     GLuint river_tex_id;
     std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
+    glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
+
+    eye_ = vec3(2.0f, 2.0f, -1.0f);
+    center_ = vec3(2.0f, 0.0f, -2.0f);
+    up_ = vec3(0,1,0);
+    theta = 3.14/4;
+    theta_up = -theta;
+    for(int i =0;i<7;i++) {
+        moveView(i);
+    }
+    view_matrix = lookAt(eye_,center_,up_);
+    grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
     // enable depth test.
@@ -150,10 +223,7 @@ void Init() {
     // looks straight down the -z axis. Otherwise the trackball's rotation gets
     // applied in a rotated coordinate frame.
     // uncomment lower line to achieve this.
-    view_matrix = LookAt(vec3(2.0f, 2.0f, 4.0f),
-                         vec3(0.0f, 0.0f, 0.0f),
-                         vec3(0.0f, 1.0f, 0.0f));
-     view_matrix = translate(mat4(1.0f), vec3(-3.0f, 0.3f, -3.0f));
+     //view_matrix = translate(mat4(1.0f), vec3(5.0f, -5.0f, 5.0f));
 
     trackball_matrix = IDENTITY_MATRIX;
 
@@ -170,10 +240,8 @@ void Init() {
     int riverPointsSize = 4;
     float *riverPoints = (float*)calloc(riverPointsSize,sizeof(float*));
     if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
-        cout << "everything seems to work!" << endl;
     grid.Init(noise_tex_id, river_tex_id,256, riverPoints, riverPointsSize);
     }else{
-        cout << "something went wrong" <<endl;
         grid.Init(noise_tex_id, river_tex_id,256, riverPoints, 0);
     }
     free(riverPoints);
@@ -185,8 +253,8 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
     cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
-
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
+    parametricTranfo(eye_,time);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.
@@ -305,6 +373,32 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     cout << "Offset decreased (fBm)" << endl;
     screenquad.updateOffset(false);
     break;
+    case 'W':
+           cout<<"Moving forward"<<endl;
+           moveView(0);
+           break;
+       case 'S':
+           cout<<"Moving backward"<<endl;
+           moveView(1);
+           break;
+
+       case 'A':
+           cout<<"Moving left"<<endl;
+           moveView(3);
+           break;
+       case 'D':
+           cout<<"Moving right"<<endl;
+           moveView(2);
+           break;
+       case 'Q':
+           cout<<"Looking Up"<<endl;
+           moveView(4);
+           break;
+       case 'E':
+           cout<<"Looking Down"<<endl;
+           moveView(5);
+           break;
+
     }
 
 }

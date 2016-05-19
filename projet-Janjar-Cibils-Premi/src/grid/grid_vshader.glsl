@@ -45,7 +45,8 @@ float distance(vec2 a, vec2 b){
 }
 
 void main() {
-    uv = (position + vec2(1.0, 1.0)) * 0.25;
+    uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
+
 
     /* TODO 1.2 : 2 Create a shader program for terrain rendering.
 The vertex shader samples the height map texture an displaces the vertices according to the height.
@@ -58,7 +59,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
     water+=(0.6);
     water = water/16;*/
 
-   float water = 0.2;
+   float water = 0.05;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
    if(height<water){
@@ -68,17 +69,6 @@ The vertex shader samples the height map texture an displaces the vertices accor
    }else if(height-0.2<water){
         isWater=2;
    }
-
-    /*if(texture(riverTex,uv).x==1){
-        height  = height +water/6;
-        isWater=1;
-    }else{
-        if(!waterDefined){
-          isWater=0;
-        }
-    }*/
-   // height = water;
-    //isWater = 1;
 
     float epsilon = 0.005;
 
