@@ -27,7 +27,9 @@ mat4 projection_matrix;
 mat4 view_matrix;
 mat4 trackball_matrix;
 mat4 old_trackball_matrix;
-
+vec3 eye_;
+vec3 center_;
+vec3 up_;
 mat4 quad_model_matrix;
 
 GLfloat currenty ;
@@ -84,13 +86,29 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     return look_at;
 }
 
+vec3 bezierCurve(vec3 a , vec3 d,float time) {
+    float x = (1-time)*d.x+time*a.x;
+    float y = (1-time)*d.y+time*a.y;
+    float z = (1-time)*d.z+time*a.z;
+    return vec3(x,y,z);
+}
+
+void parametricTranfo(vec3 pos,float time) {
+   vec3 bc = bezierCurve(pos,vec3(1,1,1),time);
+   view_matrix = lookAt(bc,center_,up_);
+}
+
 void Init() {
     // sets background color
-    glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
-
     GLuint noise_tex_id;
     GLuint river_tex_id;
     std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
+    glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
+
+    eye_ = vec3(-0.5f, 1.0f, -0.5f);
+    center_ = vec3(0.0f, 1.0f, 0.0f);
+    up_ = vec3(0,1,0);
+
     grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
@@ -132,8 +150,8 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
     cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
-
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
+    parametricTranfo(eye_,time);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.
