@@ -115,6 +115,8 @@ class Cube {
             glDeleteTextures(1,&texture_sky_id);
             glDeleteVertexArrays(1, &vertex_array_id_);
         }
+        
+        
 
         void Draw(const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
