@@ -104,7 +104,7 @@ void Init() {
     view_matrix = LookAt(vec3(2.0f, 2.0f, 4.0f),
                          vec3(0.0f, 0.0f, 0.0f),
                          vec3(0.0f, 1.0f, 0.0f));
-     view_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -4.0f));
+     view_matrix = translate(mat4(1.0f), vec3(-3.0f, 0.3f, -3.0f));
 
     trackball_matrix = IDENTITY_MATRIX;
 
