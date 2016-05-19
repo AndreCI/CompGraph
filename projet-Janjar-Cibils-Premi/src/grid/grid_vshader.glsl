@@ -17,7 +17,7 @@ void main() {
 The vertex shader samples the height map texture an displaces the vertices according to the height.
 (reuse/adapt from HW3)*/
 
-   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
+   height = ((texture(heightTex,uv/2).x + texture(heightTex,uv/2).y)/2);
 
   // height =(texture(colorTex,uv).x + texture(colorTex,uv).y);
 

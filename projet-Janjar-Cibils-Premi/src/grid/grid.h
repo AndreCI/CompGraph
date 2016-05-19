@@ -49,12 +49,12 @@ class Grid {
               glGenBuffers(1, &vertex_buffer_object_);
               glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
 
-        GLfloat step = 2.0f/(nbretriangles-1);
+        GLfloat step = 4.0f/(nbretriangles-1);
 
         for( int i=0; i<=nbretriangles;++i ){
             for(int j = 0;j<=nbretriangles;++j){
-            GLfloat x =i*(step)-1.0;
-            GLfloat y =j*(step)-1.0;
+            GLfloat x =i*(step)-2.0;
+            GLfloat y =j*(step)-2.0;
 			vertices.push_back(x); 
 			vertices.push_back(y);
 
