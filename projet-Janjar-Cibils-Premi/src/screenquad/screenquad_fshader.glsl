@@ -4,8 +4,11 @@ uniform float h_fBm;
 uniform float lacunarity_fBm;
 uniform int octaves_fBm;
 uniform float offset_fBm;
+uniform float time;
 
-out vec3 color;
+
+layout (location = 0) out vec3 heightMap;
+layout (location = 1) out vec3 riverMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -55,11 +58,68 @@ float fBm(vec2 pos, float h, float l, int octaves, float offset){
     return v;
 }
 
+float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, float speed, float waveNumber,float time_v){
+    float q = 1/(waveNumber*amplitude);
+    float phase = speed*2*3.1415/wavelenght;
+    float z = q*amplitude * direction.y*cos(waveNumber*dot(direction,pos)+phase*time_v);
+    return z;
+}
 
+
+vec2 getNextRiverPoint(vec2 pos){
+    float righti = 0;
+    float rightj = 0;
+    float height_ = 10;
+    float cu_height = 10;
+    vec2 cu_pos;
+    float corr = 30;
+    for(float i=-1;i<1;i+=0.5){
+        for(float j = -1; j<1; j+=0.5){
+            cu_pos = vec2(pos.x+i/corr, pos.y+j/corr);
+            cu_height = fBm(cu_pos*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm);
+            if(cu_height<height_){
+                height_ = cu_height;
+                righti = i;
+                rightj = j;
+            }
+        }
+    }
+    return vec2(pos.x+righti/corr,pos.y+rightj/corr);
+}
+
+float distance(vec2 a, vec2 b){
+    return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+}
+
+float isRiver(vec2 pos){
+    float ret = 0;
+   vec2 river = vec2(0.5,0.5);
+   vec2 newRiver;
+   float epsilon=0.02;
+
+   if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
+        ret=1;
+   }
+  for(int i =0; i<8; i++){
+
+       newRiver = getNextRiverPoint(river);
+         if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
+           ret=1;
+       }
+
+        river = newRiver;
+    }
+
+   return ret;
+}
 
 void main() {
-    color = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-
-   // color = 3.5*(vec3(fBm(uv,1,2,4)));
+        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        riverMap = vec3(isRiver(uv));
 
 }
+
+
+
+
+

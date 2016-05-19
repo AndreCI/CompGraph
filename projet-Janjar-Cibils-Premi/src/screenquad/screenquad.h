@@ -14,6 +14,7 @@ class ScreenQuad {
         GLuint lacunarity_id;
         GLuint octaves_id;
         GLuint offset_id;
+        GLuint time_id;
 
         float screenquad_width_;
         float screenquad_height_;
@@ -99,6 +100,8 @@ class ScreenQuad {
                 glUniform1i(octaves_id,octaves_value);
                 glUniform1f(offset_id,offset_value);
 
+                 time_id = glGetUniformLocation(program_id_, "time");
+
             }
 
         }
@@ -163,31 +166,11 @@ class ScreenQuad {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
-
-            glUniform1f(h_id,h_value);
-            // draw
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-
-
-            glBindVertexArray(0);
-            glUseProgram(0);
-        }
-
-        void DrawNoise(){
-            glUseProgram(program_id_);
-            glBindVertexArray(vertex_array_id_);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture_id_);
-
-            glUniform1f(h_id,h_value);
-            glUniform1f(lacunarity_id,lacunarity_value);
-            glUniform1i(octaves_id,octaves_value);
-            glUniform1f(offset_id,offset_value);
             // draw
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             glBindVertexArray(0);
             glUseProgram(0);
-        }
+        }      
+
 };
