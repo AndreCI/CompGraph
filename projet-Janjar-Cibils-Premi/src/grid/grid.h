@@ -53,14 +53,14 @@ class Grid {
               glGenBuffers(1, &vertex_buffer_object_);
               glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
 
-        GLfloat step = 2.0f/(nbretriangles-1);
+        GLfloat step = 4.0f/(nbretriangles-1);
 
         for( int i=0; i<=nbretriangles;++i ){
             for(int j = 0;j<=nbretriangles;++j){
             GLfloat x =i*(step)-1.0;
             GLfloat y =j*(step)-1.0;
 			vertices.push_back(x); 
-			vertices.push_back(y);
+            vertices.push_back(y);
 
 		}	
 
@@ -111,9 +111,9 @@ class Grid {
             // texture coordinates
                         {
                             const GLfloat vertex_texture_coordinates[] = { /*V1*/ 0.0f, 0.0f,
-                                                                           /*V2*/ 1.0f, 0.0f,
-                                                                           /*V3*/ 0.0f, 1.0f,
-                                                                           /*V4*/ 1.0f, 1.0f};
+                                                                           /*V2*/ 4.0f, 0.0f,
+                                                                           /*V3*/ 0.0f, 4.0f,
+                                                                           /*V4*/ 4.0f, 4.0f};
 
                             // buffer
                             glGenBuffers(1, &vertex_buffer_object_);
@@ -323,7 +323,7 @@ class Grid {
 
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
-                  const glm::mat4 &projection = IDENTITY_MATRIX) {
+                   const glm::mat4 &projection = IDENTITY_MATRIX) {
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
 
@@ -346,6 +346,7 @@ class Grid {
             glActiveTexture(GL_TEXTURE5);
             glBindTexture(GL_TEXTURE_2D, texture_snow_id);
 
+
             glActiveTexture(GL_TEXTURE6);
             glBindTexture(GL_TEXTURE_2D, texture_water_id);
 
@@ -353,6 +354,7 @@ class Grid {
             glBindTexture(GL_TEXTURE_2D, river_tex_id_);
 
             // setup MVP
+
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));
 

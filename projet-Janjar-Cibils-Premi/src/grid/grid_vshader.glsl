@@ -8,6 +8,7 @@ out float isWater;
 uniform sampler2D riverTex;
 uniform sampler2D heightTex;
 uniform mat4 MVP;
+mat4 scale;
 uniform float time;
 
 bool isNextToLand_f(vec2 pos){
@@ -43,7 +44,6 @@ void main() {
 The vertex shader samples the height map texture an displaces the vertices according to the height.
 (reuse/adapt from HW3)*/
 
-
   /*  float globalSpeed = 1;
     //float water = (waterNoise(uv,25,10,getRandomGradient(vec2(1,1),5),8*globalSpeed,6,time)); //Grosse vague de fond
     float water = (waterNoise(uv*4,15,20,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,4,time)); //vague moyenne a contre courant
@@ -53,7 +53,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
 
    float water = 0.2;
     bool waterDefined = false;
-   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
+   height = ((texture(heightTex,uv/2).x + texture(heightTex,uv/2).y)/2);
    if(height<water){
        height = (water);
        isWater=1;
@@ -62,7 +62,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
         isWater=2;
    }
 
-    if(texture(riverTex,uv).x==1){
+    if(texture(riverTex,uv/2).x==1){
         height  = height +water/6;
         isWater=1;
     }else{
@@ -74,5 +74,14 @@ The vertex shader samples the height map texture an displaces the vertices accor
     //isWater = 1;
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
-    gl_Position = MVP * vec4(pos_3d, 1.0);
+
+
+
+    // setup MVP
+    scale[0][0] = 3.0f;
+    scale[1][1] = 3.0f;
+    scale[2][2] = 3.0f;
+    scale[3][3] = 1.0f;
+
+    gl_Position = MVP*scale * vec4(pos_3d, 1.0);
 }
