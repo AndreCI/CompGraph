@@ -100,7 +100,7 @@ float isOnThisRiver(vec2 pos, vec2 head){
    if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
         ret=1;
    }
-  for(int i =0; i<8; i++){
+  for(int i =0; i<12; i++){
 
        newRiver = getNextRiverPoint(river);
          if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
@@ -114,7 +114,7 @@ float isOnThisRiver(vec2 pos, vec2 head){
 }
 
 float isRiver(vec2 pos){
-    return isOnThisRiver(pos,vec2(0.5,0.5));
+    return isOnThisRiver(pos,vec2(1.9,1.7));
 }
 
 void main() {
