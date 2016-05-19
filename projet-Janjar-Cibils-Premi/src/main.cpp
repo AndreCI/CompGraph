@@ -86,15 +86,21 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     return look_at;
 }
 
-vec3 bezierCurve(vec3 a , vec3 d,float time) {
-    float x = (1-time)*d.x+time*a.x;
-    float y = (1-time)*d.y+time*a.y;
-    float z = (1-time)*d.z+time*a.z;
+vec3 bezierCurve(vec3 P0 ,float time) {
+    float x = 5*cos(time/2);
+    float y = 4.5+cos(time);
+    float z = 10*sin(time/2);
     return vec3(x,y,z);
 }
 
+vec3 changeCenter(vec3 d) {
+    return vec3(fmod(d.x+0.5,2),fmod(d.y-0.2,2),d.z);
+}
+
 void parametricTranfo(vec3 pos,float time) {
-   vec3 bc = bezierCurve(pos,vec3(1,1,1),time);
+   vec3 bc = bezierCurve(pos,time);
+   vec3 center = center_;
+   center = changeCenter(center);
    view_matrix = lookAt(bc,center_,up_);
 }
 
@@ -105,10 +111,10 @@ void Init() {
     std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(-0.5f, 1.0f, -0.5f);
-    center_ = vec3(0.0f, 1.0f, 0.0f);
+    eye_ = vec3(2.0f, 2.0f, -1.0f);
+    center_ = vec3(2.0f, 0.0f, -2.0f);
     up_ = vec3(0,1,0);
-
+    view_matrix = lookAt(eye_,center_,up_);
     grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
@@ -119,10 +125,7 @@ void Init() {
     // looks straight down the -z axis. Otherwise the trackball's rotation gets
     // applied in a rotated coordinate frame.
     // uncomment lower line to achieve this.
-    view_matrix = LookAt(vec3(2.0f, 2.0f, 4.0f),
-                         vec3(0.0f, 0.0f, 0.0f),
-                         vec3(0.0f, 1.0f, 0.0f));
-     view_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -4.0f));
+     //view_matrix = translate(mat4(1.0f), vec3(5.0f, -5.0f, 5.0f));
 
     trackball_matrix = IDENTITY_MATRIX;
 
