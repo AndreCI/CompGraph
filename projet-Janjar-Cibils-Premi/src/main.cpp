@@ -113,24 +113,13 @@ void Display() {
     const float time = glfwGetTime();
     // draw a quad on the ground.
 
-    GLint textureWidth, textureHeight;
-    int bytes;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight);
-    bytes = textureWidth*textureHeight;
-    float *pixels = (float*)malloc(270);
-    float data[65536];
 
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.DrawNoise();
-    glReadPixels(0,0,255,255,GL_RED,GL_FLOAT, &data);
     framebuffer.Unbind();
-    //glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, pixels);
 
-    cout<< data[0] << " "<< textureWidth << " "<<textureHeight<<endl;
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
-    free(pixels);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.
