@@ -38,7 +38,7 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
 }
 
 void main() {
-    uv = (position + vec2(1.0, 1.0)) * 0.5;
+    uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
 
     /* TODO 1.2 : 2 Create a shader program for terrain rendering.
 The vertex shader samples the height map texture an displaces the vertices according to the height.
@@ -51,9 +51,9 @@ The vertex shader samples the height map texture an displaces the vertices accor
     water+=(0.6);
     water = water/16;*/
 
-   float water = 0.2;
+   float water = 0.05;
     bool waterDefined = false;
-   height = ((texture(heightTex,uv/2).x + texture(heightTex,uv/2).y)/2);
+   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
    if(height<water){
        height = (water);
        isWater=1;
@@ -62,7 +62,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
         isWater=2;
    }
 
-    if(texture(riverTex,uv/2).x==1){
+    if(texture(riverTex,uv).x + texture(riverTex,uv).y >=1){
         height  = height +water/6;
         isWater=1;
     }else{

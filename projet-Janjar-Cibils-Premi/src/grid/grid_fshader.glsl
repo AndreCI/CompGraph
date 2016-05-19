@@ -57,9 +57,9 @@ vec3 getColorFrom_kd(vec3 kd){
     vec3 X = normalize(dFdx(pos));
     vec3 normal = (cross(X,Y));
     //normal = normale a un point(uv)
-    vec3 light_dir = normalize(vec3(1,1,5));
+    vec3 light_dir = normalize(vec3(0,10,0));
     //light_dir = direction de la lumiere
-    vec3 Ld = normalize(vec3(1,1,1));
+    vec3 Ld = (vec3(1,1,1)); //white color
     //Ld = couleur du soleil
     return kd * dot(normal,light_dir) * Ld;
 }
