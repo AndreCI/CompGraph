@@ -26,7 +26,7 @@ class Grid {
 
     public:
 
-        void Init(GLuint perlin_tex = -1, GLuint river_tex = -1, int nbr_triangle = 256) {
+        void Init(GLuint perlin_tex = -1, GLuint river_tex = -1, int nbr_triangle = 256, float *riversPoints = NULL, int riverPointsSize = 0) {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("grid_vshader.glsl",
                                                   "grid_fshader.glsl");
@@ -296,7 +296,10 @@ class Grid {
 
             // other uniforms
             MVP_id_ = glGetUniformLocation(program_id_, "MVP");
-
+            GLuint riverpoints = glGetUniformLocation(program_id_, "riverPoints");
+            glUniform2fv(riverpoints,riverPointsSize,(GLfloat*)riversPoints);
+            GLuint riverpointssize = glGetUniformLocation(program_id_,"riverPointsSize");
+            glUniform1i(riverpointssize,riverPointsSize);
             // to avoid the current object being polluted
             glBindVertexArray(0);
             glUseProgram(0);

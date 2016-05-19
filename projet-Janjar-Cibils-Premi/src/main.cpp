@@ -20,7 +20,9 @@ ScreenQuad screenquad;
 float theta;
 float theta_up;
 int window_width = 800;
-int window_height = 600;
+int window_height = 800;
+
+float heightMap[800*800];
 
 using namespace glm;
 
@@ -148,6 +150,53 @@ void moveView(float direction){
                          up_);
 }
 
+int getHeight(float x, float y){
+    float lowerbound = -1;
+    float upperbound = 3;
+    if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
+        return 2;
+    }
+    float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
+    float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
+    int indice = ((newX) + (newY)*window_height);
+    cout << heightMap[indice] << " x:" << newX << " y:" << newY << endl;
+    return heightMap[indice];
+}
+
+int fillRiverPoints(float *riverPoints, int size, vec2 head){
+    if(size%2==0 && riverPoints){
+    float riverx = head.x;
+    float rivery = head.y;
+    float corr = 10;
+    float right_i = 0;
+    float right_j = 0;
+    float looking_height = 10;
+    float cu_height = 10;//getHeight(riverx,rivery);
+
+    for(int k=0; k<floor(size/2); k++){
+
+        for(float i=-1;i<1;i+=0.5){
+            for(float j = -1; j<1; j+=0.5){
+                looking_height = getHeight(riverx+i/corr,rivery+j/corr);
+                if(looking_height<cu_height){
+                    cu_height = looking_height;
+                    right_i = i;
+                    right_j = j;
+                }
+            }
+        }
+        riverx = riverx + right_i/corr;
+        rivery = rivery + right_j/corr;
+        riverPoints[k*2] = riverx;
+        riverPoints[k*2+1] = rivery;
+        cout << "next river point found! : " << riverx << ";"<<rivery<<endl;
+    }
+         return 0;
+    }else{
+         return -1;
+    }
+}
+
 void Init() {
     // sets background color
     GLuint noise_tex_id;
@@ -184,18 +233,20 @@ void Init() {
 
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-     screenquad.Draw();
+    screenquad.Draw();
+    glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer.Unbind();
 
- /*   framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-    framebuffer.Unbind();*/
-
-
-
+    int riverPointsSize = 4;
+    float *riverPoints = (float*)calloc(riverPointsSize,sizeof(float*));
+    if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
+    grid.Init(noise_tex_id, river_tex_id,256, riverPoints, riverPointsSize);
+    }else{
+        grid.Init(noise_tex_id, river_tex_id,256, riverPoints, 0);
+    }
+    free(riverPoints);
 }
+
 
 // gets called for every frame.
 void Display() {
@@ -203,7 +254,7 @@ void Display() {
     const float time = glfwGetTime();
     cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
     grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
-    //parametricTranfo(eye_,time);
+    parametricTranfo(eye_,time);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.

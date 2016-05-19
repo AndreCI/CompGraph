@@ -166,6 +166,11 @@ class ScreenQuad {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
+            //?
+            glUniform1f(h_id,h_value);
+            glUniform1f(lacunarity_id,lacunarity_value);
+            glUniform1i(octaves_id,octaves_value);
+            glUniform1f(offset_id,offset_value);
             // draw
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

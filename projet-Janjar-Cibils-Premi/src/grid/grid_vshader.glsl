@@ -1,5 +1,6 @@
 #version 330
 
+
 in vec2 position;
 
 out vec2 uv;
@@ -10,6 +11,8 @@ uniform sampler2D heightTex;
 uniform mat4 MVP;
 mat4 scale;
 uniform float time;
+uniform vec2 riverPoints[5];
+uniform int riverPointsSize;
 
 bool isNextToLand_f(vec2 pos){
     float corr = 10;
@@ -37,8 +40,13 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
     return z;
 }
 
+float distance(vec2 a, vec2 b){
+    return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+}
+
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
+
 
     /* TODO 1.2 : 2 Create a shader program for terrain rendering.
 The vertex shader samples the height map texture an displaces the vertices according to the height.
@@ -53,7 +61,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
 
    float water = 0.05;
     bool waterDefined = false;
-   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
+   height = (texture(heightTex,uv).x); //RED Channel has the value in it
    if(height<water){
        height = (water);
        isWater=1;
@@ -62,16 +70,18 @@ The vertex shader samples the height map texture an displaces the vertices accor
         isWater=2;
    }
 
-    if(texture(riverTex,uv).x + texture(riverTex,uv).y >=1){
-        height  = height +water/6;
-        isWater=1;
-    }else{
-        if(!waterDefined){
-          isWater=0;
-        }
+    float epsilon = 0.005;
+
+         for(int i=0;i<4;i++){
+             if(distance(uv,riverPoints[i]) + distance(riverPoints[i+1],uv) - distance(riverPoints[i],riverPoints[i+1])<epsilon){
+               isWater = 1;
+               waterDefined=true;
+         // height = 1;//height + water/6;
+           }
+     }
+    if(!waterDefined){
+      isWater=0;
     }
-   // height = water;
-    //isWater = 1;
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
 

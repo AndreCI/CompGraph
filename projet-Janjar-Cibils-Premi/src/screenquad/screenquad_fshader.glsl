@@ -7,8 +7,8 @@ uniform float offset_fBm;
 uniform float time;
 
 
-layout (location = 0) out vec3 heightMap;
-layout (location = 1) out vec3 riverMap;
+layout (location = 0) out float heightMap;
+layout (location = 1) out float riverMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -91,16 +91,16 @@ float distance(vec2 a, vec2 b){
     return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
 
-float isRiver(vec2 pos){
+float isOnThisRiver(vec2 pos, vec2 head){
     float ret = 0;
-   vec2 river = vec2(0.5,0.5);
+   vec2 river = head;
    vec2 newRiver;
    float epsilon=0.02;
 
    if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
         ret=1;
    }
-  for(int i =0; i<8; i++){
+  for(int i =0; i<12; i++){
 
        newRiver = getNextRiverPoint(river);
          if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
@@ -113,9 +113,13 @@ float isRiver(vec2 pos){
    return ret;
 }
 
+float isRiver(vec2 pos){
+    return isOnThisRiver(pos,vec2(1.9,1.7));
+}
+
 void main() {
-        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-        riverMap = vec3(isRiver(uv));
+        heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        riverMap = (isRiver(uv));
 
 }
 
