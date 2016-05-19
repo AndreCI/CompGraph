@@ -53,7 +53,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
 
    float water = 0.2;
     bool waterDefined = false;
-   height = ((texture(heightTex,uv).x + texture(heightTex,uv).y)/2);
+   height = (texture(heightTex,uv).x); //RED Channel has the value in it
    if(height<water){
        height = (water);
        isWater=1;

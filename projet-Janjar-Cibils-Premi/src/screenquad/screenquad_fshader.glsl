@@ -7,8 +7,8 @@ uniform float offset_fBm;
 uniform float time;
 
 
-layout (location = 0) out vec3 heightMap;
-layout (location = 1) out vec3 riverMap;
+layout (location = 0) out float heightMap;
+layout (location = 1) out float riverMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -118,8 +118,8 @@ float isRiver(vec2 pos){
 }
 
 void main() {
-        heightMap = vec3(fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-        riverMap = vec3(isRiver(uv));
+        heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        riverMap = (isRiver(uv));
 
 }
 

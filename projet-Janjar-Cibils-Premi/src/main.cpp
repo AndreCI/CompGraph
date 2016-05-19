@@ -19,7 +19,7 @@ FrameBuffer water_framebuffer;
 ScreenQuad screenquad;
 
 int window_width = 800;
-int window_height = 600;
+int window_height = 800;
 
 using namespace glm;
 
