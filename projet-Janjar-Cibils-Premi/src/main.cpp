@@ -92,7 +92,8 @@ int getHeight(float x, float y){
     if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
         return 2;
     }
-    return heightMap[x + window_height*y];
+    int indice = (floor((x+1)/2)*window_width + floor((y+1)/2)*window_height*window_height);
+    return heightMap[indice];
 }
 
 void Init() {
