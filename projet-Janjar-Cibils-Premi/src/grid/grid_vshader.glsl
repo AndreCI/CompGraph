@@ -72,7 +72,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
     }
    // height = water;
     //isWater = 1;
-    height = texture(riverTex,uv).y;
+   // height = texture(riverTex,uv).y;
     vec3 pos_3d = vec3(position.x, height, -position.y);
 
 
