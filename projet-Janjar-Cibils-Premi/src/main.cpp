@@ -21,6 +21,8 @@ ScreenQuad screenquad;
 int window_width = 800;
 int window_height = 800;
 
+float heightMap[800*800];
+
 using namespace glm;
 
 mat4 projection_matrix;
@@ -84,6 +86,15 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     return look_at;
 }
 
+int getHeight(float x, float y){
+    float lowerbound = -1;
+    float upperbound = 3;
+    if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
+        return 2;
+    }
+    return heightMap[x + window_height*y];
+}
+
 void Init() {
     // sets background color
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
@@ -115,16 +126,8 @@ void Init() {
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      screenquad.Draw();
+     glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer.Unbind();
-
- /*   framebuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-    framebuffer.Unbind();*/
-
-
-
 }
 
 // gets called for every frame.
