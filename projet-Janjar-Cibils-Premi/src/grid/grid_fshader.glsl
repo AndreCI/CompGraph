@@ -23,6 +23,7 @@ vec3(0,1.0,0),
 vec3(0,0,1.0)
 );
 
+float random(vec2 p){return fract(cos(dot(p,vec2(23.14069263277926,2.665144142690225)))*123456.);}
 
 vec3 get_kd_fBm(){
     vec3 kd = vec3(1,1,1);
@@ -59,31 +60,37 @@ vec3 getColorFrom_kd(vec3 kd){
     vec3 Y = normalize(dFdy(pos));
     vec3 X = normalize(dFdx(pos));
     vec3 normal = (cross(X,Y));
-    //normal = normale a un point(uv)
     vec3 light_dir = normalize(vec3(0,10,0));
-    //light_dir = direction de la lumiere
-    vec3 Ld = (vec3(1,1,1)); //white color
-    //Ld = couleur du soleil
+    vec3 Ld = (vec3(1,1,1));
     return kd * dot(normal,light_dir) * Ld;
 }
 
 vec3 get_kd_water(vec3 texture_to_mix){
     if(isWater==1){
-        return (texture(texture_water,uv)).rgb;//.rgb,texture_to_mix,0.5);
+        float window_width = textureSize(mirrorTex,0).x;
+        float window_height = textureSize(mirrorTex,0).y;
+        float _u =gl_FragCoord.x/window_width;
+        float _v = 1-gl_FragCoord.y/window_height;
+       return mix(texture(mirrorTex,vec2(_u,_v)).rgb,(texture(texture_water,uv)).rgb,0.8);
+
+    }else if(isWater==3){
+        return (texture(texture_water,uv)).rgb;
     }else{
-        return (texture(texture_grass,uv)).rgb;//.rgb,texture_to_mix,0.5);
+        float borne_v_b = 0.3;
+        float borne_b = 0.2;
+        vec3 couleurTop = texture(texture_grass,uv).rgb;
+        vec3 couleurMid = texture(texture_sand,uv).rgb;
+        return vec3(couleurTop.x-(couleurTop.x-couleurMid.x)*(borne_b-height)/(borne_b-borne_v_b),
+                    couleurTop.y-(couleurTop.y-couleurMid.y)*(borne_b-height)/(borne_b-borne_v_b),
+                    couleurTop.z-(couleurTop.z-couleurMid.z)*(borne_b-height)/(borne_b-borne_v_b));
     }
 }
 
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
-    vec3 kd_fBm = get_kd_fBm();
+    vec3 kd = get_kd_fBm();
     if(isWater!=0){
-        float window_width = textureSize(mirrorTex,0).x;
-        float window_height = textureSize(mirrorTex,0).y;
-        float _u =gl_FragCoord.x/window_width;
-        float _v = 1-gl_FragCoord.y/window_height;
-        kd_fBm = mix(texture(mirrorTex,vec2(_u,_v)).rgb,get_kd_water(kd_fBm),0.5);
+        kd =get_kd_water(kd);
     }
-    color = kd_fBm;
+    color = kd;
 }

@@ -70,34 +70,6 @@ class Cube {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertex_buffer_object_index_);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index), index, GL_STATIC_DRAW);
 
-            int width;
-            int height;
-            int nb_component;
-
-            string filename ="skybox_texture.jpg";
-            stbi_set_flip_vertically_on_load(1);
-            unsigned char* image_sky = stbi_load(filename.c_str(), &width,
-                                             &height, &nb_component, 0);
-
-            if(image_sky == nullptr) {
-                throw(string("Failed to load texture"));
-            }
-            glGenTextures(1,&texture_sky_id);
-            glBindTexture(GL_TEXTURE_2D, texture_sky_id);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-            if(nb_component == 3) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
-                             GL_RGB, GL_UNSIGNED_BYTE, image_sky);
-            } else if(nb_component == 4) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                             GL_RGBA, GL_UNSIGNED_BYTE, image_sky);
-            }
-
-            GLuint texture_sky = glGetUniformLocation(program_id_,"texture_sky");
-            glUniform1i(texture_sky,0 /*GL_TEXTURE4*/);
-
             // other uniforms
             MVP_id_ = glGetUniformLocation(program_id_, "MVP");
 

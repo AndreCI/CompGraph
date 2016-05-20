@@ -13,18 +13,6 @@ uniform float time;
 uniform vec2 riverPoints[5];
 uniform int riverPointsSize;
 
-/*bool isNextToLand_f(vec2 pos){
-    float corr = 10;
-    for(int i=-1;i<1;i++){
-        for(int j=-1;j<1;j++){
-            if(texture(riverTex,uv+vec2(i/corr,j/corr)).x==0){
-                return true;
-            }
-        }
-    }
-    return false;
-}*/
-
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
 vec2 getRandomGradient(vec2 xy, float seed){
@@ -46,36 +34,23 @@ float distance(vec2 a, vec2 b){
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
 
-
-    /* TODO 1.2 : 2 Create a shader program for terrain rendering.
-The vertex shader samples the height map texture an displaces the vertices according to the height.
-(reuse/adapt from HW3)*/
-
-  /*  float globalSpeed = 1;
-    //float water = (waterNoise(uv,25,10,getRandomGradient(vec2(1,1),5),8*globalSpeed,6,time)); //Grosse vague de fond
-    float water = (waterNoise(uv*4,15,20,getRandomGradient(vec2(-1,-0.5),4),7*globalSpeed,4,time)); //vague moyenne a contre courant
-    water += (waterNoise(uv/2,5,2,getRandomGradient(vec2(-1,-1),5),2*globalSpeed,10,time)); //petites vagues chaotique rare
-    water+=(0.6);
-    water = water/16;*/
-
    float water = 0.2;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
-   if(height<water){
+   if(height<=water){
        height = (water);
        isWater=1;
        waterDefined=true;    
-   }else if(height-0.2<water){
+   }else if((height-rand(uv)/15)<water){
         isWater=2;
+        waterDefined=true;
    }
-
     float epsilon = 0.005;
 
          for(int i=0;i<4;i++){
              if(distance(uv,riverPoints[i]) + distance(riverPoints[i+1],uv) - distance(riverPoints[i],riverPoints[i+1])<epsilon){
-               isWater = 1;
+               isWater = 3;
                waterDefined=true;
-         // height = 1;//height + water/6;
            }
      }
     if(!waterDefined){
