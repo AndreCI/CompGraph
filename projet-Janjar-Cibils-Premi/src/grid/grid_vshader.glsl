@@ -6,7 +6,6 @@ in vec2 position;
 out vec2 uv;
 out float height;
 out float isWater;
-uniform sampler2D riverTex;
 uniform sampler2D heightTex;
 uniform mat4 MVP;
 mat4 scale;
@@ -14,7 +13,7 @@ uniform float time;
 uniform vec2 riverPoints[5];
 uniform int riverPointsSize;
 
-bool isNextToLand_f(vec2 pos){
+/*bool isNextToLand_f(vec2 pos){
     float corr = 10;
     for(int i=-1;i<1;i++){
         for(int j=-1;j<1;j++){
@@ -24,7 +23,7 @@ bool isNextToLand_f(vec2 pos){
         }
     }
     return false;
-}
+}*/
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -59,7 +58,7 @@ The vertex shader samples the height map texture an displaces the vertices accor
     water+=(0.6);
     water = water/16;*/
 
-   float water = 0.05;
+   float water = 0.2;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
    if(height<water){
