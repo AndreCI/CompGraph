@@ -126,7 +126,8 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
         riverPoints[k*2] = riverx;
         riverPoints[k*2+1] = rivery;
         cout << "next river point found! : " << riverx << ";"<<rivery<<endl;
-    }
+     }
+
          return 0;
     }else{
          return -1;
@@ -167,15 +168,23 @@ void Init() {
     glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer.Unbind();
 
-    int riverPointsSize = 4;
+    int riverPointsSize = 12;
     float *riverPoints = (float*)calloc(riverPointsSize,sizeof(float*));
-    if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
+    riverPoints[0] = 2;
+    riverPoints[1] = 2;
+    fillRiverPoints((riverPoints+2),4,vec2(0.5,0.5));
+    riverPoints[6] = 2;
+    riverPoints[7] = 2;
+    fillRiverPoints(riverPoints+7,4,vec2(0.2,0.3));
+
+  /*  if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
         cout << "everything seems to work!" << endl;
     grid.Init(noise_tex_id, river_tex_id,256, riverPoints, riverPointsSize);
     }else{
         cout << "something went wrong" <<endl;
         grid.Init(noise_tex_id, river_tex_id,256, riverPoints, 0);
-    }
+    }*/
+    grid.Init(noise_tex_id, river_tex_id,256, riverPoints, riverPointsSize);
     free(riverPoints);
 }
 

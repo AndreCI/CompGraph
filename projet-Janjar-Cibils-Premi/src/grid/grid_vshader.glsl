@@ -44,15 +44,6 @@ float distance(vec2 a, vec2 b){
     return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
 
-void displayRiver(int start, int end, float epsilon, bool* waterDefined){
-    for(int a=start; a<end; a++){
-        if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon){
-          isWater = 1;
-          *waterDefined = true;
-        }
-    }
-
-}
 
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25;
@@ -91,30 +82,31 @@ The vertex shader samples the height map texture an displaces the vertices accor
     //isWater = 1;
 
     float epsilon = 0.005;
-    float parsePoint = riverPoints[0].x;
-    int start = 1;
-    int end = riverPoints[0].x-1;
-    for(int a = 0; a<parsePoint-1; a ++){
-        if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon){
-          isWater = 1;
-          waterDefined=true;
-        }
-    }
-   float nparsePoint = riverPoints[parsePoint+1].x;
-    for(int a = parsePoint+2; a<parsePoint+nparsePoint-1; a ++){
-        if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon){
-          isWater = 1;
-          waterDefined=true;
-        }
-    }
-    bool called = false;
-    for(int p = 1; p<riverPointsSize; p++){
-        if(!called){
-            called = true;
-            displayRiver(start,end,epsilon,&waterDefined);
-        }else if()//call at end?
-    }
 
+    int tempidx = 0;
+    int start = 1;
+    float end = riverPoints[0].x-1;
+    bool writing = true;
+    for(int a = 1; a<riverPointsSize; a++){
+        if(writing){
+            tempidx++;
+            if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon){
+              isWater = 1;
+              height = 1;
+              waterDefined=true;
+            }
+
+            if(tempidx==end){
+                writing = false;
+                a++;
+            }
+        }else{
+            end = riverPoints[a].x-1;
+            writing = true;
+            tempidx=0;
+        }
+
+    }
 
     if(!waterDefined){
       isWater=0;
