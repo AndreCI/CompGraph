@@ -65,6 +65,19 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
     return look_at;
 }
 
+int getHeight(float x, float y){
+    float lowerbound = -1;
+    float upperbound = 3;
+    if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
+        return 2;
+    }
+    float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
+    float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
+    int indice = ((newX) + (newY)*window_height);
+    cout << heightMap[indice] << " x:" << newX << " y:" << newY << endl;
+    return heightMap[indice];
+}
+
 vec3 bezierCurve(vec3 P0 ,float time) {
     float x = 5*cos(time/2);
     float y = 4.5+cos(time);
@@ -116,24 +129,17 @@ void moveView(float direction){
         theta_up = theta_up - 0.02;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
+    }else if(direction==6){
+        eye_=vec3(eye_.x,eye_.y+0.1,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.1,center_.z);
+    }else if(direction==7) {
+        eye_=vec3(eye_.x,eye_.y-0.1,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.1,center_.z);
     }
-
+    //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
    view_matrix = LookAt(eye_,center_,up_);
-}
-
-int getHeight(float x, float y){
-    float lowerbound = -1;
-    float upperbound = 3;
-    if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
-        return 2;
-    }
-    float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
-    float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
-    int indice = ((newX) + (newY)*window_height);
-    cout << heightMap[indice] << " x:" << newX << " y:" << newY << endl;
-    return heightMap[indice];
 }
 
 int fillRiverPoints(float *riverPoints, int size, vec2 head){
@@ -177,7 +183,7 @@ void Init() {
     std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(2.0f, 2.0f, -1.0f);
+    eye_ = vec3(-1.0f, 2.0f, -1.0f);
     center_ = vec3(2.0f, 0.0f, -2.0f);
     up_ = vec3(0,1,0);
     theta = 3.14/4;
@@ -283,7 +289,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
            cout<<"Looking Down"<<endl;
            moveView(5);
            break;
-
+       case 'O':
+           moveView(6);
+           break;
+       case 'P':
+            moveView(7);
+            break;
     }
 
 }
