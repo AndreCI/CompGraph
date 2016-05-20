@@ -6,7 +6,8 @@ int octaves_fBm=12;
 float offset_fBm=0.32;
 float time;
 
-out float heightMap;
+layout (location = 0) out float heightMap;
+layout (location = 1) out float lavaMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -44,6 +45,24 @@ float perlinNoise(vec2 pos,float seed){
 
 }
 
+float mask(float v, float t){
+    if(v<t){
+        return 0;
+    }else{
+        return 1;
+    }
+}
+float fBm_lava(vec2 pos, float h, float l, int octaves, float offset){
+float v = 0;
+vec2 p = pos;
+for(int i =0; i<octaves;i++){
+v += mask(abs(((perlinNoise(p,10*i))+offset)*pow(l,-h)),0.1);
+// p *=l;
+// h-=0.2;
+}
+return v;
+}
+
 float fBm(vec2 pos, float h, float l, int octaves, float offset){
     float v = 0;
     vec2 p = pos;
@@ -69,6 +88,7 @@ float distance(vec2 a, vec2 b){
 
 void main() {
         heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+        lavaMap =  1- fBm_lava(uv*20,0.3,9.25,2,0.02);
 }
 
 

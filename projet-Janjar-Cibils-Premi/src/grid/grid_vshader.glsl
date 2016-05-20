@@ -37,11 +37,11 @@ void main() {
    float water = 0.2;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
-   if(height<=water){
+   /*if(height<=water){
        height = (water);
        isWater=1;
        waterDefined=true;    
-   }else if((height-rand(uv)/15)<water){
+   }/*else if((height-rand(uv)/15)<water){
         isWater=2;
         waterDefined=true;
    }
@@ -55,7 +55,7 @@ void main() {
      }
     if(!waterDefined){
       isWater=0;
-    }
+    }*/
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
 

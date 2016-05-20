@@ -92,8 +92,8 @@ vec3 get_kd_water(vec3 texture_to_mix){
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
     vec3 kd = get_kd_fBm();
-    if(isWater!=0){
-        kd =get_kd_water(kd);
-    }
+   // if(isWater!=0){
+    //    kd =texture(mirrorTex,uv).rgb;//get_kd_water(kd);
+   // }
     color = kd;
 }

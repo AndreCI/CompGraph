@@ -180,8 +180,8 @@ void Init() {
     // sets background color
     GLuint noise_tex_id;
     GLuint mirror_tex_id;
-    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height);
-    mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
+    std::make_tuple(noise_tex_id, mirror_tex_id) = framebuffer_heightMap.Init(window_width,window_height);
+   // mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
     eye_ = vec3(-1.0f, 2.0f, -1.0f);
@@ -193,7 +193,7 @@ void Init() {
         moveView(i);
     }
     view_matrix = lookAt(eye_,center_,up_);
-    screenquad.Init(window_width,window_height,noise_tex_id);
+    screenquad.Init(window_width,window_height);
     cube.Init();
    // enable depth test.
     glEnable(GL_DEPTH_TEST);
@@ -227,13 +227,13 @@ void Display() {
     // create new VP for mirrored camera
     mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_);
 
-   framebuffer_mirror.Bind();
+ /*  framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
-   framebuffer_mirror.Unbind();
+   framebuffer_mirror.Unbind();*/
 
     grid.Draw(time,scale(IDENTITY_MATRIX,vec3(3.0,3.0,3.0)), view_matrix, projection_matrix);
-    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+  //  cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 
 }
