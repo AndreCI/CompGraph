@@ -66,7 +66,7 @@ vec3 getColorFrom_kd(vec3 kd){
 }
 
 vec3 get_kd_water(vec3 texture_to_mix){
-    if(isWater==1){
+    if(isWater==1 || height<0.22){
         float window_width = textureSize(mirrorTex,0).x;
         float window_height = textureSize(mirrorTex,0).y;
         float _u =gl_FragCoord.x/window_width;
@@ -76,6 +76,7 @@ vec3 get_kd_water(vec3 texture_to_mix){
     }else if(isWater==3){
         return (texture(texture_water,uv)).rgb;
     }else{
+        if(height<0.3) {
         float borne_v_b = 0.3;
         float borne_b = 0.2;
         vec3 couleurTop = texture(texture_grass,uv).rgb;
@@ -83,7 +84,8 @@ vec3 get_kd_water(vec3 texture_to_mix){
         return vec3(couleurTop.x-(couleurTop.x-couleurMid.x)*(borne_b-height)/(borne_b-borne_v_b),
                     couleurTop.y-(couleurTop.y-couleurMid.y)*(borne_b-height)/(borne_b-borne_v_b),
                     couleurTop.z-(couleurTop.z-couleurMid.z)*(borne_b-height)/(borne_b-borne_v_b));
-    }
+        }
+        }
 }
 
 void main() {
