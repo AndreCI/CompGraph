@@ -1,11 +1,10 @@
 #version 330 core
 in vec2 uv;
-uniform float h_fBm;
-uniform float lacunarity_fBm;
-uniform int octaves_fBm;
-uniform float offset_fBm;
-uniform float time;
-
+float h_fBm=1.2;
+float lacunarity_fBm=3.7;
+int octaves_fBm=12;
+float offset_fBm=0.32;
+float time;
 
 layout (location = 0) out float heightMap;
 layout (location = 1) out float riverMap;
@@ -102,11 +101,11 @@ float isOnThisRiver(vec2 pos, vec2 head){
    }
   for(int i =0; i<12; i++){
 
-       newRiver = getNextRiverPoint(river);
+       newRiver
+ = getNextRiverPoint(river);
          if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
            ret=1;
        }
-
         river = newRiver;
     }
 

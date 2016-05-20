@@ -9,19 +9,9 @@ class ScreenQuad {
         GLuint program_id_;             // GLSL shader program ID
         GLuint vertex_buffer_object_;   // memory buffer
         GLuint texture_id_;             // texture ID
-        GLuint texture_velocity_id_;    // texture velocity ID
-        GLuint h_id;
-        GLuint lacunarity_id;
-        GLuint octaves_id;
-        GLuint offset_id;
-        GLuint time_id;
 
         float screenquad_width_;
         float screenquad_height_;
-        float h_value;
-        float lacunarity_value;
-        int octaves_value;
-        float offset_value;
 
     public:
         void Init(float screenquad_width, float screenquad_height,
@@ -86,62 +76,8 @@ class ScreenQuad {
                                       DONT_NORMALIZE, ZERO_STRIDE,
                                       ZERO_BUFFER_OFFSET);
 
-                h_id= glGetUniformLocation(program_id_,"h_fBm");
-                lacunarity_id = glGetUniformLocation(program_id_,"lacunarity_fBm");
-                octaves_id = glGetUniformLocation(program_id_,"octaves_fBm");
-                offset_id = glGetUniformLocation(program_id_,"offset_fBm");
-
-                h_value=1.2;
-                lacunarity_value = 3.7;
-                octaves_value = 12;
-                offset_value = 0.32;
-                glUniform1f(h_id,h_value);
-                glUniform1f(lacunarity_id,lacunarity_value);
-                glUniform1i(octaves_id,octaves_value);
-                glUniform1f(offset_id,offset_value);
-
-                 time_id = glGetUniformLocation(program_id_, "time");
-
             }
 
-        }
-
-        void updateH(bool increase){
-            if(increase){
-                h_value+=0.05;
-            }else{
-                if(h_value>0.05){
-                h_value-=0.05;
-                }
-            }
-        }
-
-        void updateLacunarity(bool increase){
-            if(increase){
-                lacunarity_value+=0.05;
-            }else{
-                if(lacunarity_value>0.05){
-                lacunarity_value-=0.05;
-                }
-            }
-        }
-        void updateOffset(bool increase){
-            if(increase){
-                offset_value+=0.01;
-            }else{
-                if(offset_value>0.01){
-               offset_value-=0.01;
-                }
-            }
-        }
-        void updateOctaves(bool increase){
-            if(increase){
-                octaves_value++;
-            }else{
-                if(octaves_value>1){
-                octaves_value--;
-                }
-            }
         }
 
         void Cleanup() {
@@ -166,11 +102,6 @@ class ScreenQuad {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture_id_);
 
-            //?
-            glUniform1f(h_id,h_value);
-            glUniform1f(lacunarity_id,lacunarity_value);
-            glUniform1i(octaves_id,octaves_value);
-            glUniform1f(offset_id,offset_value);
             // draw
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

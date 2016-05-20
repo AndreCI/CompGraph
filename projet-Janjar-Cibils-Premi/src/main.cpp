@@ -28,37 +28,13 @@ using namespace glm;
 
 mat4 projection_matrix;
 mat4 view_matrix;
-mat4 trackball_matrix;
-mat4 old_trackball_matrix;
 vec3 eye_;
 vec3 center_;
 vec3 up_;
-mat4 quad_model_matrix;
 
 GLfloat currenty ;
 
-Trackball trackball;
-
-
-mat4 OrthographicProjection(float left, float right, float bottom,
-                            float top, float near, float far) {
-    assert(right > left);
-    assert(far > near);
-    assert(top > bottom);
-    mat4 projection = mat4(1.0f);
-    projection[0][0] = 2.0f / (right - left);
-    projection[1][1] = 2.0f / (top - bottom);
-    projection[2][2] = -2.0f / (far - near);
-    projection[3][3] = 1.0f;
-    projection[3][0] = -(right + left) / (right - left);
-    projection[3][1] = -(top + bottom) / (top - bottom);
-    projection[3][2] = -(far + near) / (far - near);
-    return projection;
-}
-
 mat4 PerspectiveProjection(float fovy, float aspect, float near, float far) {
-    // TODO 1: Create a perspective projection matrix given the field of view,
-    // aspect ratio, and near and far plane distances.
     mat4 projection = IDENTITY_MATRIX;
     float top = near*tan(fovy);
     float bottom = -top;
@@ -104,7 +80,7 @@ void parametricTranfo(vec3 pos,float time) {
    vec3 bc = bezierCurve(pos,time);
    vec3 center = center_;
    center = changeCenter(center);
-   view_matrix = lookAt(bc,center_,up_);
+   view_matrix = lookAt(bc,center,up_);
 }
 
 void moveView(float direction){
@@ -142,12 +118,9 @@ void moveView(float direction){
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }
 
-    center_ = vec3(center_.x,0.5f , center_.z); //getHeight(center_.x, center_.z)
+    center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
-    cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
-     view_matrix = LookAt(eye_,
-                         center_,
-                         up_);
+   view_matrix = LookAt(eye_,center_,up_);
 }
 
 int getHeight(float x, float y){
@@ -171,7 +144,7 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
     float right_i = 0;
     float right_j = 0;
     float looking_height = 10;
-    float cu_height = 10;//getHeight(riverx,rivery);
+    float cu_height = 10;
 
     for(int k=0; k<floor(size/2); k++){
 
@@ -216,20 +189,8 @@ void Init() {
     grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
-    // enable depth test.
+   // enable depth test.
     glEnable(GL_DEPTH_TEST);
-
-    // TODO 3: once you use the trackball, you should use a view matrix that
-    // looks straight down the -z axis. Otherwise the trackball's rotation gets
-    // applied in a rotated coordinate frame.
-    // uncomment lower line to achieve this.
-     //view_matrix = translate(mat4(1.0f), vec3(5.0f, -5.0f, 5.0f));
-
-    trackball_matrix = IDENTITY_MATRIX;
-
-    // scaling matrix to scale the cube down to a reasonable size.
-
-    quad_model_matrix = translate(mat4(1.0f), vec3(0.0f, -0.25f, 0.0f));
 
     framebuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -252,9 +213,9 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
-    cube.Draw(trackball_matrix*quad_model_matrix,view_matrix,projection_matrix);
-    grid.Draw(time, trackball_matrix * quad_model_matrix, view_matrix, projection_matrix);
-    parametricTranfo(eye_,time);
+    grid.Draw(time, IDENTITY_MATRIX, view_matrix, projection_matrix);
+    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+    //parametricTranfo(eye_,time);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.
@@ -268,52 +229,7 @@ vec2 TransformScreenCoords(GLFWwindow* window, int x, int y) {
                 1.0f - 2.0f * (float)y / height);
 }
 
-void MouseButton(GLFWwindow* window, int button, int action, int mod) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        double x_i, y_i;
-        glfwGetCursorPos(window, &x_i, &y_i);
-        vec2 p = TransformScreenCoords(window, x_i, y_i);
-        currenty = p.y;
-        trackball.BeingDrag(p.x, p.y);
-        old_trackball_matrix = trackball_matrix;
-        // Store the current state of the model matrix.
-        //zoom = p.y;
-    }
-}
 
-void MousePos(GLFWwindow* window, double x, double y) {
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        vec2 p = TransformScreenCoords(window, x, y);
-        // TODO 3: Calculate 'trackball_matrix' given the return value of
-        // trackball.Drag(...) and the value stored in 'old_trackball_matrix'.
-        // See also the mouse_button(...) function.
-        // trackball_matrix = ...
-         trackball_matrix = trackball.Drag(p.x,p.y);
-
-         mat4 t = trackball.Drag(p.x,p.y);
-
-         trackball_matrix = t*old_trackball_matrix;
-    }
-
-    // zoom
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        // TODO 4: Implement zooming. When the right mouse button is pressed,
-        // moving the mouse cursor up and down (along the screen's y axis)
-        // should zoom out and it. For that you have to update the current
-        // 'view_matrix' with a translation along the z axis.
-        // view_matrix = ...
-
-        vec2 p = TransformScreenCoords(window, x, y);
-
-        if(p.y>currenty){
-            view_matrix = translate(view_matrix,vec3(0.0f, 0.0f, 1.0f));
-        }else{
-            view_matrix = translate(view_matrix,vec3(-0.0f, -0.0f, -1.0f));
-        }
-
-        currenty = p.y;
-    }
-}
 
 // Gets called when the windows/framebuffer is resized.
 void SetupProjection(GLFWwindow* window, int width, int height) {
@@ -342,37 +258,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
     switch(key){
-        case 'O':
-            cout << "H increased (fBm)" << endl;
-            screenquad.updateH(true);
-             break;
-        case 'P':
-        cout << "H decreased (fBm)" << endl;
-        screenquad.updateH(false);
-        break;
-    case 'I':
-        cout << "Lacunarity increased (fBm)" << endl;
-        screenquad.updateLacunarity(true);
-         break;
-    case 'U':
-    cout << "Lacunarity decreased (fBm)" << endl;
-    screenquad.updateLacunarity(false);
-    break;case 'M':
-        cout << "Octaves increased (fBm)" << endl;
-        screenquad.updateOctaves(true);
-         break;
-    case 'L':
-    cout << "Octaves decreased (fBm)" << endl;
-    screenquad.updateOctaves(false);
-    break;
-    case 'K':
-        cout << "Offset increased (fBm)" << endl;
-        screenquad.updateOffset(true);
-         break;
-    case 'J':
-    cout << "Offset decreased (fBm)" << endl;
-    screenquad.updateOffset(false);
-    break;
     case 'W':
            cout<<"Moving forward"<<endl;
            moveView(0);
@@ -439,9 +324,6 @@ int main(int argc, char *argv[]) {
     // set the framebuffer resize callback
     glfwSetFramebufferSizeCallback(window, SetupProjection);
 
-    // set the mouse press and position callback
-    glfwSetMouseButtonCallback(window, MouseButton);
-    glfwSetCursorPosCallback(window, MousePos);
 
     // GLEW Initialization (must have a context)
     // https://www.opengl.org/wiki/OpenGL_Loading_Library
