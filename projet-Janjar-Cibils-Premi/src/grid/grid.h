@@ -336,6 +336,8 @@ class Grid {
             glBindTexture(GL_TEXTURE_2D, mirror_tex_id_);
 
             // setup MVP
+            GLuint tome = glGetUniformLocation(program_id_,"time");
+            glUniform1f(tome,time);
 
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));

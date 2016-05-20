@@ -14,6 +14,7 @@ uniform sampler2D texture_rock;
 uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
 uniform sampler2D texture_water;
+uniform float time;
 
 
 
@@ -66,7 +67,7 @@ vec3 getColorFrom_kd(vec3 kd){
 }
 
 vec3 get_kd_water(vec3 texture_to_mix){
-    if(isWater==1 || height<0.22){
+    if(isWater==1 || height<0.25){
         float window_width = textureSize(mirrorTex,0).x;
         float window_height = textureSize(mirrorTex,0).y;
         float _u =gl_FragCoord.x/window_width;
@@ -74,7 +75,7 @@ vec3 get_kd_water(vec3 texture_to_mix){
        return mix(texture(mirrorTex,vec2(_u,_v)).rgb,(texture(texture_water,uv)).rgb,0.8);
 
     }else if(isWater==3){
-        return (texture(texture_water,uv)).rgb;
+        return (texture(texture_water,(uv+mod(time,3)/10))).rgb;
     }else{
         if(height<0.3) {
         float borne_v_b = 0.3;
