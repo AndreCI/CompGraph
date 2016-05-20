@@ -175,7 +175,8 @@ void Init() {
     fillRiverPoints((riverPoints+2),4,vec2(0.5,0.5));
     riverPoints[6] = 2;
     riverPoints[7] = 2;
-    fillRiverPoints(riverPoints+7,4,vec2(0.2,0.3));
+    fillRiverPoints(riverPoints+8,4,vec2(0.5,0.5));
+
 
   /*  if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
         cout << "everything seems to work!" << endl;

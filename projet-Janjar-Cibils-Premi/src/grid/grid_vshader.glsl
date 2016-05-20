@@ -84,7 +84,6 @@ The vertex shader samples the height map texture an displaces the vertices accor
     float epsilon = 0.005;
 
     int tempidx = 0;
-    int start = 1;
     float end = riverPoints[0].x-1;
     bool writing = true;
     for(int a = 1; a<riverPointsSize; a++){
@@ -95,7 +94,6 @@ The vertex shader samples the height map texture an displaces the vertices accor
               height = 1;
               waterDefined=true;
             }
-
             if(tempidx==end){
                 writing = false;
                 a++;

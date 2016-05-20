@@ -299,7 +299,7 @@ class Grid {
             GLuint riverpoints = glGetUniformLocation(program_id_, "riverPoints");
             glUniform2fv(riverpoints,riverPointsSize,(GLfloat*)riversPoints);
             GLuint riverpointssize = glGetUniformLocation(program_id_,"riverPointsSize");
-            glUniform1i(riverpointssize,riverPointsSize);
+            glUniform1i(riverpointssize,riverPointsSize/2);
             // to avoid the current object being polluted
             glBindVertexArray(0);
             glUseProgram(0);
