@@ -6,7 +6,6 @@ in vec2 position;
 out vec2 uv;
 out float height;
 out float isWater;
-uniform sampler2D riverTex;
 uniform sampler2D heightTex;
 uniform mat4 MVP;
 mat4 scale;
@@ -34,6 +33,7 @@ float distance(vec2 a, vec2 b){
 
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
+
    float water = 0.2;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
@@ -49,7 +49,7 @@ void main() {
 
          for(int i=0;i<4;i++){
              if(distance(uv,riverPoints[i]) + distance(riverPoints[i+1],uv) - distance(riverPoints[i],riverPoints[i+1])<epsilon){
-               isWater = 1;
+               isWater = 3;
                waterDefined=true;
            }
      }

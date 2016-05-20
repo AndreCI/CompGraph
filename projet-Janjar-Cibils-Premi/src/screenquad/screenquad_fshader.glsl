@@ -6,8 +6,7 @@ int octaves_fBm=12;
 float offset_fBm=0.32;
 float time;
 
-layout (location = 0) out float heightMap;
-layout (location = 1) out float riverMap;
+out float heightMap;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -16,8 +15,7 @@ vec2 getRandomGradient(vec2 xy, float seed){
    return vec2(cos(x),sin(x));
 }
 float smoothInterpolation(float v){
-   return 6*v*v*v*v*v - 15*v*v*v*v + 10*v*v*v;//6*pow(v,5) - 15*pow(v,4) +10*pow(v,3);
-   // return v*v*v-v*v;
+   return 6*v*v*v*v*v - 15*v*v*v*v + 10*v*v*v;
 }
 
 float mix(float x, float y, float al){
@@ -65,61 +63,12 @@ float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, fl
 }
 
 
-vec2 getNextRiverPoint(vec2 pos){
-    float righti = 0;
-    float rightj = 0;
-    float height_ = 10;
-    float cu_height = 10;
-    vec2 cu_pos;
-    float corr = 30;
-    for(float i=-1;i<1;i+=0.5){
-        for(float j = -1; j<1; j+=0.5){
-            cu_pos = vec2(pos.x+i/corr, pos.y+j/corr);
-            cu_height = fBm(cu_pos*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm);
-            if(cu_height<height_){
-                height_ = cu_height;
-                righti = i;
-                rightj = j;
-            }
-        }
-    }
-    return vec2(pos.x+righti/corr,pos.y+rightj/corr);
-}
-
 float distance(vec2 a, vec2 b){
     return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
 
-float isOnThisRiver(vec2 pos, vec2 head){
-    float ret = 0;
-   vec2 river = head;
-   vec2 newRiver;
-   float epsilon=0.02;
-
-   if(uv.x>=river.x-0.02 && uv.x<=river.x+0.02 && uv.y>=river.y-0.02 && uv.y<=river.y+0.02){
-        ret=1;
-   }
-  for(int i =0; i<12; i++){
-
-       newRiver
- = getNextRiverPoint(river);
-         if(distance(river,pos)+distance(newRiver,pos)-distance(river,newRiver)<epsilon){
-           ret=1;
-       }
-        river = newRiver;
-    }
-
-   return ret;
-}
-
-float isRiver(vec2 pos){
-    return isOnThisRiver(pos,vec2(1.9,1.7));
-}
-
 void main() {
         heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
-        riverMap = (isRiver(uv));
-
 }
 
 

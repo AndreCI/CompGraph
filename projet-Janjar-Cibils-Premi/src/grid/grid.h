@@ -13,11 +13,11 @@ class Grid {
         GLuint num_indices_;                    // number of vertices to render
         GLuint MVP_id_;                         // model, view, proj matrix ID
         GLuint perlin_tex_id_;                  // texture perlin ID
-        GLuint river_tex_id_;
+        GLuint mirror_tex_id_;
         GLuint vertex_buffer_object_;           // memory buffer
 
         GLuint perlin_tex_id;
-        GLuint river_tex_id;
+        GLuint mirror_tex_id;
         GLuint texture_sand_id;
         GLuint texture_rock_id;
         GLuint texture_grass_id;
@@ -26,7 +26,7 @@ class Grid {
 
     public:
 
-        void Init(GLuint perlin_tex = -1, GLuint river_tex = -1, int nbr_triangle = 256, float *riversPoints = NULL, int riverPointsSize = 0) {
+        void Init(GLuint perlin_tex = -1, GLuint mirror_tex = -1, int nbr_triangle = 256, float *riversPoints = NULL, int riverPointsSize = 0) {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("grid_vshader.glsl",
                                                   "grid_fshader.glsl");
@@ -255,7 +255,8 @@ class Grid {
                 glUniform1i(texture_water,6 /*GL_TEXTURE6*/);
 
                 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
-                perlin_tex_id_ = (perlin_tex==-1)? texture_id_ : perlin_tex;
+                perlin_tex_id_ = perlin_tex;
+                mirror_tex_id_ = mirror_tex;
 
               //  glUseProgram(program_id_);
 
@@ -263,12 +264,8 @@ class Grid {
                 perlin_tex_id = glGetUniformLocation(program_id_, "heightTex");
                 glUniform1i(perlin_tex_id, 1 /*GL_TEXTURE1*/);
 
-                river_tex_id_ = river_tex;
-                glUseProgram(program_id_);
-
-                // texture uniforms
-                river_tex_id = glGetUniformLocation(program_id_, "riverTex");
-                glUniform1i(river_tex_id, 7 /*GL_TEXTURE7*/);
+                mirror_tex_id = glGetUniformLocation(program_id_, "mirrorTex");
+                glUniform1i(mirror_tex_id, 7 /*GL_TEXTURE7*/);
 
                 //<<<<<<<<
 
@@ -296,6 +293,7 @@ class Grid {
             glDeleteProgram(program_id_);
             glDeleteTextures(1, &texture_id_);
             glDeleteTextures(1, &perlin_tex_id_);
+            glDeleteTextures(1, &mirror_tex_id_);
             glDeleteTextures(1, &texture_sand_id);
             glDeleteTextures(1, &texture_grass_id);
             glDeleteTextures(1, &texture_rock_id);
@@ -333,8 +331,9 @@ class Grid {
             glActiveTexture(GL_TEXTURE6);
             glBindTexture(GL_TEXTURE_2D, texture_water_id);
 
+
             glActiveTexture(GL_TEXTURE7);
-            glBindTexture(GL_TEXTURE_2D, river_tex_id_);
+            glBindTexture(GL_TEXTURE_2D, mirror_tex_id_);
 
             // setup MVP
 

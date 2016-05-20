@@ -14,8 +14,8 @@
 #include "cube/cube.h"
 Cube cube;
 Grid grid;
-FrameBuffer framebuffer;
-FrameBuffer water_framebuffer;
+FrameBuffer framebuffer_heightMap;
+FrameBuffer framebuffer_mirror;
 ScreenQuad screenquad;
 float theta;
 float theta_up;
@@ -179,37 +179,39 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
 void Init() {
     // sets background color
     GLuint noise_tex_id;
-    GLuint river_tex_id;
-    std::tie(noise_tex_id, river_tex_id) = framebuffer.Init(window_width,window_height);
+    GLuint mirror_tex_id;
+    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height);
+    mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
     eye_ = vec3(-1.0f, 2.0f, -1.0f);
     center_ = vec3(2.0f, 0.0f, -2.0f);
     up_ = vec3(0,1,0);
     theta = 3.14/4;
-    theta_up = -theta;
+    theta_up = -0;
     for(int i =0;i<7;i++) {
         moveView(i);
     }
     view_matrix = lookAt(eye_,center_,up_);
-    grid.Init(noise_tex_id, river_tex_id,256);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
    // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
-    framebuffer.Bind();
+
+    framebuffer_heightMap.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.Draw();
     glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
-    framebuffer.Unbind();
+    framebuffer_heightMap.Unbind();
+
 
     int riverPointsSize = 4;
     float *riverPoints = (float*)calloc(riverPointsSize,sizeof(float*));
-    if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
-    grid.Init(noise_tex_id, river_tex_id,256, riverPoints, riverPointsSize);
+    if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.45))==0){
+        grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
     }else{
-        grid.Init(noise_tex_id, river_tex_id,256, riverPoints, 0);
+        grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, 0);
     }
     free(riverPoints);
 }
@@ -219,9 +221,21 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
+
+    //  mirror the camera position
+    vec3 cam_pos_mirror = vec3(eye_.x,eye_.y,eye_.z);
+    // create new VP for mirrored camera
+    mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_);
+
+   framebuffer_mirror.Bind();
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
+   framebuffer_mirror.Unbind();
+
     grid.Draw(time, IDENTITY_MATRIX, view_matrix, projection_matrix);
     cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
+
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.

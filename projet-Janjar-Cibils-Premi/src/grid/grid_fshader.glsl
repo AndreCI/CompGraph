@@ -7,6 +7,7 @@ in float height;
 in float isWater;
 
 uniform sampler2D colorTex;
+uniform sampler2D mirrorTex;
 uniform sampler2D tex;
 uniform sampler2D texture_snow;
 uniform sampler2D texture_rock;
@@ -14,7 +15,6 @@ uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
 uniform sampler2D texture_water;
 
-uniform vec2 riverPoints[5];
 
 
 const vec3 COLORS[3] = vec3[](
@@ -67,7 +67,14 @@ vec3 getColorFrom_kd(vec3 kd){
 
 vec3 get_kd_water(vec3 texture_to_mix){
     if(isWater==1){
-        return (texture(texture_water,uv)).rgb;//.rgb,texture_to_mix,0.5);
+        float window_width = textureSize(mirrorTex,0).x;
+        float window_height = textureSize(mirrorTex,0).y;
+        float _u =gl_FragCoord.x/window_width;
+        float _v = 1-gl_FragCoord.y/window_height;
+       return mix(texture(mirrorTex,vec2(_u,_v)).rgb,(texture(texture_water,uv)).rgb,0.8);
+
+    }else if(isWater==3){
+        return (texture(texture_water,uv)).rgb;
     }else{
         float borne_v_b = 0.3;
         float borne_b = 0.2;
@@ -81,9 +88,9 @@ vec3 get_kd_water(vec3 texture_to_mix){
 
 void main() {
     color = vec3(0.0,0.0,0.0); //DO NOT TOUCH OR IT WILL BLOW UP
-    vec3 kd_fBm = get_kd_fBm();
+    vec3 kd = get_kd_fBm();
     if(isWater!=0){
-        kd_fBm = get_kd_water(kd_fBm);
+        kd =get_kd_water(kd);
     }
-    color = kd_fBm;
+    color = kd;
 }
