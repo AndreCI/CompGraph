@@ -260,7 +260,7 @@ void Display() {
 
 
       //  mirror the camera position
-      vec3 cam_pos_mirror = vec3(eye_.x,-eye_.y,eye_.z);
+      vec3 cam_pos_mirror = vec3(eye_.x,eye_.y,eye_.z);
       // create new VP for mirrored camera
       mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_);
 
