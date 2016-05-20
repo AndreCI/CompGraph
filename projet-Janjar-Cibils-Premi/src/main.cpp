@@ -129,6 +129,12 @@ void moveView(float direction){
         theta_up = theta_up - 0.02;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
+    }else if(direction==6){
+        eye_=vec3(eye_.x,eye_.y+0.1,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.1,center_.z);
+    }else if(direction==7) {
+        eye_=vec3(eye_.x,eye_.y-0.1,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.1,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
@@ -283,7 +289,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
            cout<<"Looking Down"<<endl;
            moveView(5);
            break;
-
+       case 'O':
+           moveView(6);
+           break;
+       case 'P':
+            moveView(7);
+            break;
     }
 
 }
