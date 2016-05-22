@@ -232,7 +232,7 @@ void Display() {
    grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scale(IDENTITY_MATRIX,vec3(3.0,3.0,3.0)), view_matrix, projection_matrix);
+    grid.Draw(time,scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0)), view_matrix, projection_matrix);
     cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 
