@@ -1,7 +1,10 @@
 #version 330
 in vec3 uv;
-out vec3 color;
+out vec4 color;
+
+
+uniform samplerCube skybox;
 
 void main() {
-    color = vec3(0,0,0);
+    color = texture(skybox,uv);
 }

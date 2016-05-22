@@ -11,10 +11,50 @@ class Cube {
         GLuint program_id_;                     // GLSL shader program ID
         GLuint num_indices_;                    // number of vertices to render
         GLuint MVP_id_;                         // model, view, proj matrix ID
-
         GLuint texture_sky_id;
+        GLuint cubeTexture;
+        GLuint cubemapTexture;
+        GLuint textureID;
 
     public:
+        void loadTexture() {
+
+            vector<const GLchar*> faces;
+            faces.push_back("cloudtop_rt.tga");
+            faces.push_back("cloudtop_lf.tga");
+            faces.push_back("cloudtop_up.tga");
+            faces.push_back("cloudtop_dn.tga");
+            faces.push_back("cloudtop_bk.tga");
+            faces.push_back("cloudtop_ft.tga");
+
+            int width,height;
+            int nb_component;
+            unsigned char* image;
+
+
+            glGenTextures(1, &textureID);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+            for(GLuint i = 0; i < faces.size(); i++)
+            {
+                image = stbi_load(faces[i], &width,
+                                  &height, &nb_component, 0);
+                glTexImage2D(
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
+                );
+                stbi_image_free(image);
+            }
+
+
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        }
+
         void Init() {
             // compile the shaders.
             program_id_ = icg_helper::LoadShaders("cube_vshader.glsl",
@@ -24,6 +64,7 @@ class Cube {
             }
 
             glUseProgram(program_id_);
+
 
             // vertex one vertex array
             glGenVertexArrays(1, &vertex_array_id_);
@@ -75,8 +116,12 @@ class Cube {
 
             // to avoid the current object being polluted
             glBindVertexArray(0);
+
+            loadTexture();
             glUseProgram(0);
         }
+
+
 
         void Cleanup() {
             glBindVertexArray(0);
@@ -91,20 +136,28 @@ class Cube {
         void Draw(const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
                   const glm::mat4 &projection = IDENTITY_MATRIX) {
+
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
+            //glDepthMask(GL_FALSE);// Remember to turn depth writing off
 
-            // setup MVP
+
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));
 
+                    glActiveTexture(GL_TEXTURE0);
+                    glUniform1i(glGetUniformLocation(program_id_, "skybox"), 0);
+                    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+                    glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);
+                  //  glDrawArrays(GL_TRIANGLES, 0, 36);
+                    glBindVertexArray(0);
+                    //glDepthMask(GL_TRUE);
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture_sky_id);
+            // setup MVP
 
 
             // draw
-            glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);
+           // glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);
 
             glBindVertexArray(0);
             glUseProgram(0);
