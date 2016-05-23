@@ -52,7 +52,7 @@ class Grid {
               GLfloat step = 4.0f/(nbretriangles-1);
 
         for( int i=0; i<=nbretriangles;++i ){
-            for(int j = 0;j<=nbretriangles;++j){
+            for(int j = 0; j<=nbretriangles; ++j){
             GLfloat x =i*(step)-1.0;
             GLfloat y =j*(step)-1.0;
 			vertices.push_back(x); 
@@ -96,10 +96,11 @@ class Grid {
 
             // texture coordinates
                         {
-                            const GLfloat vertex_texture_coordinates[] = { /*V2*/ 1.0f, 0.0f,
+                            const GLfloat vertex_texture_coordinates[] = { /*V1*/ 0.0f ,0.0f,
+                                                                           /*V2*/ 1.0f, 0.0f,
                                                                            /*V3*/ 0.0f, 1.0f,
-                                                                           /*V4*/ 1.0f, 1.0f,
-                                                                           /*V1*/ 0.0f, 0.0f};
+                                                                           /*V4*/ 1.0f, 1.0f };
+
 
                             // buffer
                             glGenBuffers(1, &vertex_buffer_object_);

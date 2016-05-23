@@ -276,7 +276,7 @@ void Display() {
    framebuffer_mirror.Unbind();
    // glm::mat4 myMatrix = glm::translate(10.0f, 0.0f, 0.0f);
     grid.Draw(time,IDENTITY_MATRIX, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)));
-    cube.Draw(IDENTITY_MATRIX,view_matrix,translate(projection_matrix,vec3(0.0,3.0,-10.0)));
+    cube.Draw(IDENTITY_MATRIX,view_matrix,translate(projection_matrix,vec3(0.0,3.0,-15.0)));
     //parametricTranfo(eye_,time);
 
 }
