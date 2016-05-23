@@ -297,7 +297,8 @@ class Grid {
             // other uniforms
             MVP_id_ = glGetUniformLocation(program_id_, "MVP");
             GLuint riverpoints = glGetUniformLocation(program_id_, "riverPoints");
-            glUniform2fv(riverpoints,riverPointsSize,(GLfloat*)riversPoints);
+            cout << riverPointsSize/2 <<endl;
+            glUniform2fv(riverpoints,riverPointsSize/2,(GLfloat*)riversPoints);
             GLuint riverpointssize = glGetUniformLocation(program_id_,"riverPointsSize");
             glUniform1i(riverpointssize,riverPointsSize/2);
             // to avoid the current object being polluted

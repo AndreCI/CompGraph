@@ -11,8 +11,8 @@ uniform sampler2D heightTex;
 uniform mat4 MVP;
 mat4 scale;
 uniform float time;
-uniform vec2 riverPoints[5];
 uniform int riverPointsSize;
+uniform vec2 riverPoints[100];
 
 bool isNextToLand_f(vec2 pos){
     float corr = 10;
@@ -82,17 +82,20 @@ The vertex shader samples the height map texture an displaces the vertices accor
     //isWater = 1;
 
     float epsilon = 0.005;
-
+  //  riverPoints[5] = vec2(0.42,0.6);
     int tempidx = 0;
     float end = riverPoints[0].x-1;
     bool writing = true;
     for(int a = 1; a<riverPointsSize; a++){
         if(writing){
             tempidx++;
-            if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon){
+            if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon
+                    && riverPoints[a] !=vec2(0,0)){
+
               isWater = 1;
-              height = 1;
+              height = height;
               waterDefined=true;
+
             }
             if(tempidx==end){
                 writing = false;

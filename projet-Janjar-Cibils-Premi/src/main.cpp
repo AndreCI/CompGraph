@@ -169,13 +169,18 @@ void Init() {
     framebuffer.Unbind();
 
     int riverPointsSize = 12;
-    float *riverPoints = (float*)calloc(riverPointsSize,sizeof(float*));
+    float *riverPoints = (float*)calloc(riverPointsSize+3,sizeof(float*));
     riverPoints[0] = 2;
     riverPoints[1] = 2;
-    fillRiverPoints((riverPoints+2),4,vec2(0.5,0.5));
+    fillRiverPoints((riverPoints+2),4,vec2(0.8,0.5));
     riverPoints[6] = 2;
     riverPoints[7] = 2;
-    fillRiverPoints(riverPoints+8,4,vec2(0.5,0.5));
+    fillRiverPoints(riverPoints+8,4,vec2(0.62,0.8));
+    for(int i =0; i<12; i++){
+        cout << riverPoints[i] <<endl;
+    }
+    riverPoints[12] = 0;
+    riverPoints[13] = 0;
 
 
   /*  if(fillRiverPoints(riverPoints,riverPointsSize,vec2(0.5,0.5))==0){
