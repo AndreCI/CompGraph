@@ -67,7 +67,7 @@ vec3 getColorFrom_kd(vec3 kd){
 }
 
 vec3 get_kd_water(vec3 texture_to_mix){
-    if(isWater==1 || height<0.25){
+    if(isWater==1 || height<0.22){
         float window_width = textureSize(mirrorTex,0).x;
         float window_height = textureSize(mirrorTex,0).y;
         float _u =gl_FragCoord.x/window_width;
