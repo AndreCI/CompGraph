@@ -198,6 +198,9 @@ void Init() {
    // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
     framebuffer_heightMap.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -214,10 +217,7 @@ void Init() {
     riverPoints[6] = 2;
     riverPoints[7] = 2;
     fillRiverPoints(riverPoints+8,4,vec2(0.62,0.8));
-    for(int i =0; i<12; i++){
-        cout << riverPoints[i] <<endl;
-    }
-        grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
+    grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
 
     free(riverPoints);
 }
@@ -227,18 +227,21 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
+    mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0));
 
     //  mirror the camera position
-    vec3 cam_pos_mirror = vec3(eye_.x,eye_.y,eye_.z);
+    vec3 cam_pos_mirror = vec3(eye_.x,0.4-eye_.y,eye_.z);
     // create new VP for mirrored camera
-    mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_);
+    vec3 up_mirror = vec3(0,1,0);
+    mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_mirror);
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
+   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1);
+   cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0)), view_matrix, projection_matrix);
+    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0);
     cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 
