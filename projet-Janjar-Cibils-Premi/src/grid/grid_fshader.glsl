@@ -15,6 +15,7 @@ uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
 uniform sampler2D texture_water;
 uniform float time;
+uniform float waterLevel;
 
 
 
@@ -67,7 +68,7 @@ vec3 getColorFrom_kd(vec3 kd){
 }
 
 vec3 get_kd_water(vec3 texture_to_mix){
-    if(isWater==1 || height<0.22){
+    if(isWater==1 || height<waterLevel+0.02){
         float window_width = textureSize(mirrorTex,0).x;
         float window_height = textureSize(mirrorTex,0).y;
         float _u =gl_FragCoord.x/window_width;
@@ -77,9 +78,9 @@ vec3 get_kd_water(vec3 texture_to_mix){
     }else if(isWater==3){
         return (texture(texture_water,(uv+mod(time,3)/10))).rgb;
     }else{
-        if(height<0.3) {
-        float borne_v_b = 0.3;
-        float borne_b = 0.2;
+        if(height<waterLevel+0.1) {
+        float borne_v_b = waterLevel+0.1;
+        float borne_b = waterLevel;
         vec3 couleurTop = texture(texture_grass,uv).rgb;
         vec3 couleurMid = texture(texture_sand,uv).rgb;
         return vec3(couleurTop.x-(couleurTop.x-couleurMid.x)*(borne_b-height)/(borne_b-borne_v_b),

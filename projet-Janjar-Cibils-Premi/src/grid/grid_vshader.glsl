@@ -12,6 +12,7 @@ mat4 scale;
 uniform float time;
 uniform vec2 riverPoints[100];
 uniform int riverPointsSize;
+uniform float waterLevel;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -22,7 +23,7 @@ vec2 getRandomGradient(vec2 xy, float seed){
 
 float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, float speed, float waveNumber,float time_v){
     float q = 1/(waveNumber*amplitude);
-    float phase = speed*2*3.1415/wavelenght;
+    float phase = 0.3*speed*2*3.1415/wavelenght;
     float z = q*amplitude * direction.y*cos(waveNumber*dot(direction,pos)+phase*time_v);
     return z;
 }
@@ -34,14 +35,23 @@ float distance(vec2 a, vec2 b){
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
 
-   float water = 0.2;
     bool waterDefined = false;
+
+
+    isWater=1;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
-   if(height<=water){
-       height = (water);
+   if(height<=waterLevel){
+
+       height = waterNoise(uv,0.1,1,uv,0.2,1,time)/10;
+       height +=waterNoise(uv, 0.4,1.2,vec2(uv.x+4,uv.y-5),0.2,3,time)/10;
+       height +=waterNoise(uv, 0.8,0.8,vec2(uv.x+2,uv.y-6),0.4,1,time)/10;
+       height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
+       height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
+       height = height/50;
+       height+=waterLevel;
        isWater=1;
        waterDefined=true;    
-   }else if((height-rand(uv)/15)<water){
+   }else if((height-rand(uv)/15)<waterLevel){
         isWater=2;
         waterDefined=true;
    }
@@ -57,7 +67,6 @@ void main() {
                    && riverPoints[a] !=vec2(0,0)){
 
              isWater = 3;
-            // height = 1;
              waterDefined=true;
 
            }
