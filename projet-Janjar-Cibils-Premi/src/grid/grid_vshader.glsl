@@ -10,7 +10,7 @@ uniform sampler2D heightTex;
 uniform mat4 MVP;
 mat4 scale;
 uniform float time;
-uniform vec2 riverPoints[5];
+uniform vec2 riverPoints[100];
 uniform int riverPointsSize;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
@@ -45,14 +45,33 @@ void main() {
         isWater=2;
         waterDefined=true;
    }
-    float epsilon = 0.005;
+   float epsilon = 0.005;
+ //  riverPoints[5] = vec2(0.42,0.6);
+   int tempidx = 0;
+   float end = riverPoints[0].x-1;
+   bool writing = true;
+   for(int a = 1; a<riverPointsSize; a++){
+       if(writing){
+           tempidx++;
+           if(distance(uv,riverPoints[a]) + distance(riverPoints[a+1],uv) - distance(riverPoints[a],riverPoints[a+1])<epsilon
+                   && riverPoints[a] !=vec2(0,0)){
 
-         for(int i=0;i<4;i++){
-             if(distance(uv,riverPoints[i]) + distance(riverPoints[i+1],uv) - distance(riverPoints[i],riverPoints[i+1])<epsilon){
-               isWater = 3;
-               waterDefined=true;
+             isWater = 3;
+             height = height;
+             waterDefined=true;
+
            }
-     }
+           if(tempidx==end){
+               writing = false;
+               a++;
+           }
+       }else{
+           end = riverPoints[a].x-1;
+           writing = true;
+           tempidx=0;
+       }
+
+   }
     if(!waterDefined){
       isWater=0;
     }
