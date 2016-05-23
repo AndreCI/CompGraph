@@ -21,6 +21,9 @@ float theta;
 float theta_up;
 int window_width = 800;
 int window_height = 800;
+float inertieDir; //direction of the move where we will apply the inertie (temp var)
+float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
+const float inertieDuration = 0; //duration of inertie, make it 1.2 to have some nice effect
 
 float heightMap[800*800];
 
@@ -96,48 +99,57 @@ void parametricTranfo(vec3 pos,float time) {
    view_matrix = lookAt(bc,center,up_);
 }
 
-void moveView(float direction){
+void moveView(float direction, bool userCalled){
+    inertieDir = direction;
+
+    float speed = 0.1;
+    if(inertieDuration==0){ //useful to debugging, but not for final
+        speed = 1;
+    }
+    if(userCalled){
+        inertieMark = glfwGetTime()+ inertieDuration;
+    }
     //WASD QE is assumed with swiss keyboard
     if(direction==0){ //W
         vec2 ce = normalize(vec2(center_.x - eye_.x,center_.z - eye_.z));
         vec3 dir = vec3(ce.x,0,ce.y);
-         eye_ = eye_+dir*vec3(0.05);
-         center_ = center_ + dir*vec3(0.05);
+         eye_ = eye_+dir*vec3(0.05*speed);
+         center_ = center_ + dir*vec3(0.05*speed);
     }else if(direction==1){ //S
         vec2 ce = normalize(vec2(eye_.x - center_.x,eye_.z - center_.z));
         vec3 dir = vec3(ce.x,0,ce.y);
         // vec3 dir = normalize(eye_ - center_);
-         eye_ = eye_+dir*vec3(0.05);
-         center_ = center_ + dir*vec3(0.05);
+         eye_ = eye_+dir*vec3(0.05*speed);
+         center_ = center_ + dir*vec3(0.05*speed);
     }else if(direction==2){ //A
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
-        theta = theta+0.02;
+        theta = theta+0.02*speed;
         center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
     }else if(direction==3){ //D
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
-        theta = theta-0.02;
+        theta = theta-0.02*speed;
         center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
     }else if(direction==4){ //Q
         float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
         float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
-        theta_up = theta_up + 0.02;
+        theta_up = theta_up + 0.01*speed;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }else if(direction==5){ //E
         float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
         float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
-        theta_up = theta_up - 0.02;
+        theta_up = theta_up - 0.01*speed;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }else if(direction==6){
-        eye_=vec3(eye_.x,eye_.y+0.1,eye_.z);
-        center_ = vec3(center_.x,center_.y+0.1,center_.z);
+        eye_=vec3(eye_.x,eye_.y+0.03*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.03*speed,center_.z);
     }else if(direction==7) {
-        eye_=vec3(eye_.x,eye_.y-0.1,eye_.z);
-        center_ = vec3(center_.x,center_.y-0.1,center_.z);
+        eye_=vec3(eye_.x,eye_.y-0.03*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.03*speed,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
-    center_ = vec3(center_.x,0.5f , center_.z);
+    //center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
    view_matrix = LookAt(eye_,center_,up_);
 }
@@ -190,7 +202,7 @@ void Init() {
     theta = 3.14/4;
     theta_up = -0;
     for(int i =0;i<7;i++) {
-        moveView(i);
+        moveView(i,false);
     }
     view_matrix = lookAt(eye_,center_,up_);
     screenquad.Init(window_width,window_height,noise_tex_id);
@@ -227,6 +239,10 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
+
+    if(inertieMark>time){
+        moveView(inertieDir,false);
+    }
 
     //  mirror the camera position
     vec3 cam_pos_mirror = vec3(eye_.x,eye_.y,eye_.z);
@@ -283,38 +299,41 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+    if(action == GLFW_PRESS || action == GLFW_REPEAT){
+        bool inertie = action == GLFW_REPEAT;
     switch(key){
     case 'W':
            cout<<"Moving forward"<<endl;
-           moveView(0);
+           moveView(0,true);
            break;
        case 'S':
            cout<<"Moving backward"<<endl;
-           moveView(1);
+           moveView(1,true);
            break;
 
        case 'A':
            cout<<"Moving left"<<endl;
-           moveView(3);
+           moveView(3,true);
            break;
        case 'D':
            cout<<"Moving right"<<endl;
-           moveView(2);
+           moveView(2,true);
            break;
        case 'Q':
            cout<<"Looking Up"<<endl;
-           moveView(4);
+           moveView(4,true);
            break;
        case 'E':
            cout<<"Looking Down"<<endl;
-           moveView(5);
+           moveView(5,true);
            break;
        case 'O':
-           moveView(6);
+           moveView(6,true);
            break;
        case 'P':
-            moveView(7);
+            moveView(7,true);
             break;
+        }
     }
 
 }
