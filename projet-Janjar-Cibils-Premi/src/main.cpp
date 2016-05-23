@@ -6,7 +6,6 @@
 #include "icg_helper.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "grid/grid.h"
 #include "framebuffer.h"
 #include "trackball.h"
@@ -23,7 +22,7 @@ int window_width = 800;
 int window_height = 800;
 float inertieDir; //direction of the move where we will apply the inertie (temp var)
 float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
-const float inertieDuration = 0; //duration of inertie, make it 1.2 to have some nice effect
+const float inertieDuration = 1.2; //duration of inertie, make it 1.2 to have some nice effect
 
 float heightMap[800*800];
 
@@ -69,10 +68,10 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
 }
 
 int getHeight(float x, float y){
-    float lowerbound = -1;
-    float upperbound = 3;
+    float lowerbound = -2;
+    float upperbound = 6;
     if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
-        return 2;
+        return 4;
     }
     float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
     float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
@@ -151,6 +150,8 @@ void moveView(float direction, bool userCalled){
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
+     cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
+     cout <<"Vous regardez le point : " << center_.x<< " " << center_.z<< " " << center_.y << endl;
    view_matrix = LookAt(eye_,center_,up_);
 }
 
@@ -211,14 +212,14 @@ void Init() {
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(-1.0f, 2.0f, -1.0f);
-    center_ = vec3(2.0f, 0.0f, -2.0f);
+    eye_ = vec3(-2.5f, 2.0f, 2.0f);
+    center_ = vec3(1.0f, 0.5f, -1.0f);
     up_ = vec3(0,1,0);
-    theta = 3.14/4;
-    theta_up = -0;
-    for(int i =0;i<7;i++) {
-        moveView(i,false);
+    theta =-acos((center_.x -eye_.x)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
+    if(eye_.z<center_.z) {
+        theta = -theta;
     }
+    theta_up =0;
     view_matrix = lookAt(eye_,center_,up_);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
@@ -270,10 +271,10 @@ void Display() {
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
+   //grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0)), view_matrix, projection_matrix);
+    grid.Draw(time,IDENTITY_MATRIX, view_matrix, projection_matrix);
     cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 

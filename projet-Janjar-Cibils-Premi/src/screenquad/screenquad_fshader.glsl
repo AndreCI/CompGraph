@@ -68,7 +68,7 @@ float distance(vec2 a, vec2 b){
 }
 
 void main() {
-        heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
+    heightMap = (fBm(uv*3,h_fBm,lacunarity_fBm,octaves_fBm,offset_fBm));
 }
 
 
