@@ -57,7 +57,7 @@ void main() {
                    && riverPoints[a] !=vec2(0,0)){
 
              isWater = 3;
-             height = height;
+            // height = 1;
              waterDefined=true;
 
            }

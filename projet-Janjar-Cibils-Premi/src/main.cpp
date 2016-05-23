@@ -154,11 +154,14 @@ void moveView(float direction, bool userCalled){
    view_matrix = LookAt(eye_,center_,up_);
 }
 
+
+
+
 int fillRiverPoints(float *riverPoints, int size, vec2 head){
     if(size%2==0 && riverPoints){
     float riverx = head.x;
     float rivery = head.y;
-    float corr = 10;
+    float corr = 20;
     float right_i = 0;
     float right_j = 0;
     float looking_height = 10;
@@ -180,12 +183,24 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
         rivery = rivery + right_j/corr;
         riverPoints[k*2] = riverx;
         riverPoints[k*2+1] = rivery;
-        cout << "next river point found! : " << riverx << ";"<<rivery<<endl;
     }
          return 0;
     }else{
          return -1;
     }
+}
+
+int fillAllRivers(vec2 *headList, int *lengths, int sizeOfHeads, float *riverPoints){
+    int a = 0;
+    for(int i = 0;i<sizeOfHeads;i++){
+        riverPoints[a] = lengths[i];
+        riverPoints[a+1] = lengths[i];
+        if(fillRiverPoints(riverPoints+a+2, riverPoints[a]*2, headList[i])==-1){
+            return -1;
+        }
+        a = a + 2 + riverPoints[a]*2;
+    }
+    return 0;
 }
 
 void Init() {
@@ -217,20 +232,24 @@ void Init() {
     glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer_heightMap.Unbind();
 
+    int sizeOfHeadlist = 3;
+    vec2 headList[3]; // MUST BE = sizeOfHeadlist
+    headList[0] = vec2(0.8,0.43);
+    headList[1] = vec2(0.62,0.8);
+    headList[2] = vec2(0.4,0.4);
+    int lenghts[3]; //MUST BE = sizeOfHeadlist
+    lenghts[0] = 3;
+    lenghts[1] = 3;
+    lenghts[2] = 2;
 
-    int riverPointsSize = 12;
-    float *riverPoints = (float*)calloc(riverPointsSize+3,sizeof(float*));
-    riverPoints[0] = 2;
-    riverPoints[1] = 2;
-    fillRiverPoints((riverPoints+2),4,vec2(0.8,0.5));
-    riverPoints[6] = 2;
-    riverPoints[7] = 2;
-    fillRiverPoints(riverPoints+8,4,vec2(0.62,0.8));
-    for(int i =0; i<12; i++){
-        cout << riverPoints[i] <<endl;
+
+    int riverPointsSize = sizeOfHeadlist*2;
+    for(int i =0; i<sizeOfHeadlist; i++){
+        riverPointsSize+=lenghts[i]*2;
     }
+    float *riverPoints = (float*)calloc(riverPointsSize+3,sizeof(float*));
+    fillAllRivers(headList,lenghts,sizeOfHeadlist,riverPoints);
         grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
-
     free(riverPoints);
 }
 
