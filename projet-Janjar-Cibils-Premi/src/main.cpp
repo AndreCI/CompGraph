@@ -1,6 +1,7 @@
 // glew must be before glfw
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtx/transform.hpp>
 
 // contains helper functions such as shader compiler
 #include "icg_helper.h"
@@ -273,9 +274,9 @@ void Display() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    //grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
    framebuffer_mirror.Unbind();
-
-    grid.Draw(time,IDENTITY_MATRIX, view_matrix, projection_matrix);
-    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+   // glm::mat4 myMatrix = glm::translate(10.0f, 0.0f, 0.0f);
+    grid.Draw(time,IDENTITY_MATRIX, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)));
+    cube.Draw(IDENTITY_MATRIX,view_matrix,translate(projection_matrix,vec3(0.0,3.0,-10.0)));
     //parametricTranfo(eye_,time);
 
 }

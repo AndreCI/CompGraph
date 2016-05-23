@@ -81,10 +81,10 @@ void main() {
 
 
     // setup MVP
-   /* scale[0][0] = 3.0f;
-    scale[1][1] = 3.0f;
-    scale[2][2] = 3.0f;
-    scale[3][3] = 1.0f;*/
+    scale[0][0] = 2.5f;
+    scale[1][1] = 2.5f;
+    scale[2][2] = 2.5f;
+    scale[3][3] = 1.0f;
 
-    gl_Position = MVP* vec4(pos_3d, 1.0);
+    gl_Position = MVP*scale*vec4(pos_3d, 1.0);
 }

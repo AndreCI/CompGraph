@@ -71,14 +71,14 @@ class Cube {
             glBindVertexArray(vertex_array_id_);
 
             // Position buffer
-            const GLfloat position[] = {-6.0f, -6.0f,  6.0f, // left, bottom, front
-                                        6.0f, -6.0f,  6.0f,  // right, bottom, front
-                                        6.0f,  6.0f,  6.0f,  // right, top, front
-                                        -6.0f,  6.0f,  6.0f, // left, top, front
-                                        -6.0f, -6.0f, -6.0f, // left, bottom, back
-                                        6.0f, -6.0f, -6.0f,  // right, bottom, back
-                                        6.0f,  6.0f, -6.0f,  // right, top, back
-                                        -6.0f,6.0f, -6.0f};// left, top, back
+            const GLfloat position[] = {-15.0f, -15.0f,  15.0f, // left, bottom, front
+                                        15.0f, -15.0f,  15.0f,  // right, bottom, front
+                                        15.0f,  15.0f,  15.0f,  // right, top, front
+                                        -15.0f,  15.0f,  15.0f, // left, top, front
+                                        -15.0f, -15.0f, -15.0f, // left, bottom, back
+                                        15.0f, -15.0f, -15.0f,  // right, bottom, back
+                                        15.0f,  15.0f, -15.0f,  // right, top, back
+                                        -15.0f,15.0f, -15.0f};// left, top, back
 
             glGenBuffers(1, &vertex_buffer_object_position_);
             glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_position_);
