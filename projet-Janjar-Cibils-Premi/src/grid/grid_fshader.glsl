@@ -76,9 +76,9 @@ vec4 get_kd_water(vec4 texture_to_mix){
         float _v = 1-(gl_FragCoord.y)/window_height;
 
        vec2 uv_ = vec2(_u,_v);
-       return vec4(mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0),1);
+       return vec4(mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0.8),1);
 
-    }/*else if(isWater==3){
+    }else if(isWater==3){
         return vec4((texture(texture_water,(uv+mod(time,3)/10))).rgb,1);
     }else{
         if(height<waterLevel+0.1) {
@@ -91,7 +91,7 @@ vec4 get_kd_water(vec4 texture_to_mix){
                     couleurTop.z-(couleurTop.z-couleurMid.z)*(borne_b-height)/(borne_b-borne_v_b),
                     1);
         }
-        }*/
+        }
 }
 
 void main() {

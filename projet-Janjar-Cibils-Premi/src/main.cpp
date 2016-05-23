@@ -231,7 +231,7 @@ void Display() {
 
     //  mirror the camera position
     float waterLevel = 0.2;
-    vec3 cam_pos_mirror = vec3(eye_.x,-eye_.y,eye_.z);
+    vec3 cam_pos_mirror = vec3(eye_.x,waterLevel*2-eye_.y,eye_.z);
     // create new VP for mirrored camera
     vec3 up_mirror = vec3(0,1,0);
     mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_mirror);
