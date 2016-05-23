@@ -280,6 +280,8 @@ class Grid {
             glUniform2fv(riverpoints,riverPointsSize/2,(GLfloat*)riversPoints);
             GLuint riverpointssize = glGetUniformLocation(program_id_,"riverPointsSize");
             glUniform1i(riverpointssize,riverPointsSize/2);
+
+
             // to avoid the current object being polluted
             glBindVertexArray(0);
             glUseProgram(0);
@@ -308,7 +310,8 @@ class Grid {
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
                    const glm::mat4 &projection = IDENTITY_MATRIX,
-                  float isReflection = 0) {
+                  float isReflection = 0,
+                  float water_level = 0.2) {
 
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
@@ -346,6 +349,9 @@ class Grid {
 
             GLuint reflect = glGetUniformLocation(program_id_, "reflect");
             glUniform1f(reflect,isReflection);
+
+            GLuint waterLevel = glGetUniformLocation(program_id_, "waterLevel");
+            glUniform1f(waterLevel,water_level);
 
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));

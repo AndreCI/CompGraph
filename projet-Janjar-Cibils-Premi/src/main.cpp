@@ -129,12 +129,12 @@ void moveView(float direction){
         theta_up = theta_up - 0.02;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
-    }else if(direction==6){
-        eye_=vec3(eye_.x,eye_.y+0.1,eye_.z);
-        center_ = vec3(center_.x,center_.y+0.1,center_.z);
-    }else if(direction==7) {
-        eye_=vec3(eye_.x,eye_.y-0.1,eye_.z);
-        center_ = vec3(center_.x,center_.y-0.1,center_.z);
+    }else if(direction==6){ //O
+        eye_=vec3(eye_.x,eye_.y+0.05,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.05,center_.z);
+    }else if(direction==7) { //P
+        eye_=vec3(eye_.x,eye_.y-0.05,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.05,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
@@ -230,18 +230,19 @@ void Display() {
     mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0));
 
     //  mirror the camera position
-    vec3 cam_pos_mirror = vec3(eye_.x,0.4-eye_.y,eye_.z);
+    float waterLevel = 0.2;
+    vec3 cam_pos_mirror = vec3(eye_.x,-eye_.y,eye_.z);
     // create new VP for mirrored camera
     vec3 up_mirror = vec3(0,1,0);
     mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_mirror);
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1);
+   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1,waterLevel);
    cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0);
+    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
     cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 
@@ -286,6 +287,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+    if(action == GLFW_PRESS || action == GLFW_REPEAT){
     switch(key){
     case 'W':
            cout<<"Moving forward"<<endl;
@@ -318,6 +320,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
        case 'P':
             moveView(7);
             break;
+    }
     }
 
 }
