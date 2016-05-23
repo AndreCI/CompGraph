@@ -143,13 +143,13 @@ void moveView(float direction, bool userCalled){
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }else if(direction==6){
         eye_=vec3(eye_.x,eye_.y+0.03*speed,eye_.z);
-        center_ = vec3(center_.x,center_.y+0.03*speed,center_.z);
+       // center_ = vec3(center_.x,center_.y+0.03*speed,center_.z);
     }else if(direction==7) {
         eye_=vec3(eye_.x,eye_.y-0.03*speed,eye_.z);
-        center_ = vec3(center_.x,center_.y-0.03*speed,center_.z);
+      //  center_ = vec3(center_.x,center_.y-0.03*speed,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
-    //center_ = vec3(center_.x,0.5f , center_.z);
+    center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
    view_matrix = LookAt(eye_,center_,up_);
 }
