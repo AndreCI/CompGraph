@@ -85,6 +85,16 @@ void main() {
       isWater=0;
     }
 
+    if(uv.x>0.1){
+    height = waterNoise(uv,0.1,1,uv,0.2,1,time)/10;
+    height +=waterNoise(uv, 0.4,1.2,vec2(uv.x+4,uv.y-5),0.2,3,time)/10;
+    height +=waterNoise(uv, 0.8,0.8,vec2(uv.x+2,uv.y-6),0.4,1,time)/10;
+    height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
+    height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
+    height = height/50;
+    height+=waterLevel;
+    isWater=1;
+    }
     vec3 pos_3d = vec3(position.x, height, -position.y);
 
 
