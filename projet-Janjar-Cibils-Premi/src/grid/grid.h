@@ -67,9 +67,9 @@ class Grid {
                     indices.push_back(sommet2);
                     indices.push_back(sommet3);
                     int sommet4 = ((nbretriangles+1)*i)+j+1;
-                    indices.push_back(sommet1);
-                    indices.push_back(sommet4);
                     indices.push_back(sommet3);
+                    indices.push_back(sommet4);
+                    indices.push_back(sommet1);
                 }
 			}
                 num_indices_ = indices.size();
