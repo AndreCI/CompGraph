@@ -12,6 +12,7 @@ mat4 scale;
 uniform float time;
 uniform vec2 riverPoints[100];
 uniform int riverPointsSize;
+uniform float waterLevel;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
@@ -34,19 +35,17 @@ float distance(vec2 a, vec2 b){
 void main() {
     uv = (position + vec2(1.0, 1.0)) * 0.25; //0->1 into -1 -> 2
 
-   float water = 0.2;
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
-   if(height<=water){
-       height = (water);
+   if(height<=waterLevel){
+       height = (waterLevel);
        isWater=1;
        waterDefined=true;    
-   }else if((height-rand(uv)/15)<water){
+   }else if((height-rand(uv)/15)<waterLevel){
         isWater=2;
         waterDefined=true;
    }
    float epsilon = 0.005;
- //  riverPoints[5] = vec2(0.42,0.6);
    int tempidx = 0;
    float end = riverPoints[0].x-1;
    bool writing = true;
@@ -75,6 +74,8 @@ void main() {
     if(!waterDefined){
       isWater=0;
     }
+
+
 
     vec3 pos_3d = vec3(position.x, height, -position.y);
 

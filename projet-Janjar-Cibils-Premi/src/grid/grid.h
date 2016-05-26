@@ -39,7 +39,6 @@ class Grid {
             // vertex one vertex array
             glGenVertexArrays(1, &vertex_array_id_);
             glBindVertexArray(vertex_array_id_);
-
             // vertex coordinates and indices
             {
                 std::vector<GLfloat> vertices;
@@ -68,9 +67,9 @@ class Grid {
                     indices.push_back(sommet2);
                     indices.push_back(sommet3);
                     int sommet4 = ((nbretriangles+1)*i)+j+1;
-                    indices.push_back(sommet1);
-                    indices.push_back(sommet4);
                     indices.push_back(sommet3);
+                    indices.push_back(sommet4);
+                    indices.push_back(sommet1);
                 }
 			}
                 num_indices_ = indices.size();
@@ -267,6 +266,10 @@ class Grid {
 
                 mirror_tex_id = glGetUniformLocation(program_id_, "mirrorTex");
                 glUniform1i(mirror_tex_id, 7 /*GL_TEXTURE7*/);
+                /*glBindTexture(GL_TEXTURE_2D, mirror_tex_id);
+                glTexEnvf(GL_TEXTURE_2D,
+                          GL_TEXTURE_ENV_MODE, //REALLY not sure for this param
+                          GL_BLEND);*/ //is supposed to be usefull to make part of the texture transparent
 
                 //<<<<<<<<
 
@@ -278,6 +281,8 @@ class Grid {
             glUniform2fv(riverpoints,riverPointsSize/2,(GLfloat*)riversPoints);
             GLuint riverpointssize = glGetUniformLocation(program_id_,"riverPointsSize");
             glUniform1i(riverpointssize,riverPointsSize/2);
+
+
             // to avoid the current object being polluted
             glBindVertexArray(0);
             glUseProgram(0);
@@ -305,7 +310,10 @@ class Grid {
 
         void Draw(float time, const glm::mat4 &model = IDENTITY_MATRIX,
                   const glm::mat4 &view = IDENTITY_MATRIX,
-                   const glm::mat4 &projection = IDENTITY_MATRIX) {
+                   const glm::mat4 &projection = IDENTITY_MATRIX,
+                  float isReflection = 0,
+                  float water_level = 0.2) {
+
             glUseProgram(program_id_);
             glBindVertexArray(vertex_array_id_);
 
@@ -339,6 +347,12 @@ class Grid {
             // setup MVP
             GLuint tome = glGetUniformLocation(program_id_,"time");
             glUniform1f(tome,time);
+
+            GLuint reflect = glGetUniformLocation(program_id_, "reflect");
+            glUniform1f(reflect,isReflection);
+
+            GLuint waterLevel = glGetUniformLocation(program_id_, "waterLevel");
+            glUniform1f(waterLevel,water_level);
 
             glm::mat4 MVP = projection*view*model;
             glUniformMatrix4fv(MVP_id_, ONE, DONT_TRANSPOSE, glm::value_ptr(MVP));

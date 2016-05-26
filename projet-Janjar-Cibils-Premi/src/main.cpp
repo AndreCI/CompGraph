@@ -141,12 +141,12 @@ void moveView(float direction, bool userCalled){
         theta_up = theta_up - 0.01*speed;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
-    }else if(direction==6){
-        eye_=vec3(eye_.x,eye_.y+0.03*speed,eye_.z);
-       // center_ = vec3(center_.x,center_.y+0.03*speed,center_.z);
-    }else if(direction==7) {
-        eye_=vec3(eye_.x,eye_.y-0.03*speed,eye_.z);
-      //  center_ = vec3(center_.x,center_.y-0.03*speed,center_.z);
+    }else if(direction==6){ //O
+        eye_=vec3(eye_.x,eye_.y+0.05*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.05*speed,center_.z);
+    }else if(direction==7) { //P
+        eye_=vec3(eye_.x,eye_.y-0.05*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.05*speed,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
@@ -209,7 +209,7 @@ void Init() {
     // sets background color
     GLuint noise_tex_id;
     GLuint mirror_tex_id;
-    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height);
+    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height, true);
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
@@ -226,6 +226,9 @@ void Init() {
     cube.Init();
    // enable depth test.
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     framebuffer_heightMap.Bind();
@@ -260,23 +263,32 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
+    mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0));
 
     if(inertieMark>time){
         moveView(inertieDir,false);
     }
 
     //  mirror the camera position
-    vec3 cam_pos_mirror = vec3(eye_.x,eye_.y,eye_.z);
+    float waterLevel = 0.2;
+    vec3 cam_pos_mirror = vec3(eye_.x,0.8-eye_.y,eye_.z);
+    vec3 center_mirror = vec3(center_.x,-center_.y, center_.z);
     // create new VP for mirrored camera
-    mat4 view_mirror = lookAt(cam_pos_mirror,center_,up_);
+    vec3 up_mirror = vec3(0,1,0);
+    mat4 view_mirror = lookAt(cam_pos_mirror,center_,-up_mirror);
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   //grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix);
+   cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
+   grid.Draw(time, scaledModel, view_mirror, scale(projection_matrix,vec3(0.2,0.2,0.2)),1,waterLevel);
+  glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
-   // glm::mat4 myMatrix = glm::translate(10.0f, 0.0f, 0.0f);
-    grid.Draw(time,IDENTITY_MATRIX, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)));
-    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+
+    grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
+   cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+
     //parametricTranfo(eye_,time);
 
 }
@@ -321,7 +333,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
     if(action == GLFW_PRESS || action == GLFW_REPEAT){
-        bool inertie = action == GLFW_REPEAT;
+    bool inertie = action == GLFW_REPEAT;
     switch(key){
     case 'W':
            cout<<"Moving forward"<<endl;
@@ -356,8 +368,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             break;
         }
     }
+  }
 
-}
 
 
 int main(int argc, char *argv[]) {
