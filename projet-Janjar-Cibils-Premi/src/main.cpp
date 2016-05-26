@@ -180,7 +180,7 @@ void Init() {
     // sets background color
     GLuint noise_tex_id;
     GLuint mirror_tex_id;
-    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height);
+    noise_tex_id = framebuffer_heightMap.Init(window_width,window_height, true);
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
@@ -231,23 +231,23 @@ void Display() {
 
     //  mirror the camera position
     float waterLevel = 0.2;
-    vec3 cam_pos_mirror = vec3(eye_.x,-eye_.y,eye_.z);
-    vec3 center_mirror = vec3(center_.x,waterLevel*2-center_.y, center_.z);
+    vec3 cam_pos_mirror = vec3(eye_.x,0.8-eye_.y,eye_.z);
+    vec3 center_mirror = vec3(center_.x,-center_.y, center_.z);
     // create new VP for mirrored camera
     vec3 up_mirror = vec3(0,1,0);
     mat4 view_mirror = lookAt(cam_pos_mirror,center_,-up_mirror);
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   grid.Draw(time, scaledModel, view_mirror, projection_matrix,0,waterLevel);
-  // cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
-   glDisable(GL_CULL_FACE);
+   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1,waterLevel);
+  glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
 
     grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
- //   cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+   cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
     //parametricTranfo(eye_,time);
 
 }
