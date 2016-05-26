@@ -38,7 +38,7 @@ void main() {
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
    if(height<=waterLevel){
-       height = (waterLevel);
+       height =  (waterLevel);
        isWater=1;
        waterDefined=true;    
    }else if((height-rand(uv)/15)<waterLevel){
