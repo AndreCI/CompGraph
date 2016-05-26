@@ -86,5 +86,5 @@ void main() {
     scale[2][2] = 2.8f;
     scale[3][3] = 1.0f;
 
-    gl_Position = MVP*scale*vec4(pos_3d, 1.0);
+    gl_Position = MVP*vec4(pos_3d, 1.0);
 }
