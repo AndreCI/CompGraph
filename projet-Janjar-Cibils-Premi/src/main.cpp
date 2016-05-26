@@ -1,12 +1,12 @@
 // glew must be before glfw
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtx/transform.hpp>
 
 // contains helper functions such as shader compiler
 #include "icg_helper.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "grid/grid.h"
 #include "framebuffer.h"
 #include "trackball.h"
@@ -21,6 +21,9 @@ float theta;
 float theta_up;
 int window_width = 800;
 int window_height = 800;
+float inertieDir; //direction of the move where we will apply the inertie (temp var)
+float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
+const float inertieDuration = 1.2; //duration of inertie, make it 1.2 to have some nice effect
 
 float heightMap[800*800];
 
@@ -66,10 +69,10 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
 }
 
 int getHeight(float x, float y){
-    float lowerbound = -1;
-    float upperbound = 3;
+    float lowerbound = -2;
+    float upperbound = 6;
     if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
-        return 2;
+        return 4;
     }
     float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
     float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
@@ -96,57 +99,71 @@ void parametricTranfo(vec3 pos,float time) {
    view_matrix = lookAt(bc,center,up_);
 }
 
-void moveView(float direction){
+void moveView(float direction, bool userCalled){
+    inertieDir = direction;
+
+    float speed = 0.1;
+    if(inertieDuration==0){ //useful to debugging, but not for final
+        speed = 1;
+    }
+    if(userCalled){
+        inertieMark = glfwGetTime()+ inertieDuration;
+    }
     //WASD QE is assumed with swiss keyboard
     if(direction==0){ //W
         vec2 ce = normalize(vec2(center_.x - eye_.x,center_.z - eye_.z));
         vec3 dir = vec3(ce.x,0,ce.y);
-         eye_ = eye_+dir*vec3(0.05);
-         center_ = center_ + dir*vec3(0.05);
+         eye_ = eye_+dir*vec3(0.05*speed);
+         center_ = center_ + dir*vec3(0.05*speed);
     }else if(direction==1){ //S
         vec2 ce = normalize(vec2(eye_.x - center_.x,eye_.z - center_.z));
         vec3 dir = vec3(ce.x,0,ce.y);
         // vec3 dir = normalize(eye_ - center_);
-         eye_ = eye_+dir*vec3(0.05);
-         center_ = center_ + dir*vec3(0.05);
+         eye_ = eye_+dir*vec3(0.05*speed);
+         center_ = center_ + dir*vec3(0.05*speed);
     }else if(direction==2){ //A
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
-        theta = theta+0.02;
+        theta = theta+0.02*speed;
         center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
     }else if(direction==3){ //D
         float r = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) + (eye_.z - center_.z)*(eye_.z - center_.z));
-        theta = theta-0.02;
+        theta = theta-0.02*speed;
         center_ = vec3(eye_.x + r*cos(theta),center_.y,eye_.z+r*sin(theta));
     }else if(direction==4){ //Q
         float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
         float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
-        theta_up = theta_up + 0.02;
+        theta_up = theta_up + 0.01*speed;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }else if(direction==5){ //E
         float r = sqrt((eye_.y - center_.y)*(eye_.y - center_.y)+(eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
         float vnorm = sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.z - center_.z)*(eye_.z - center_.z));
-        theta_up = theta_up - 0.02;
+        theta_up = theta_up - 0.01*speed;
         vec3 v = vec3(center_.x-eye_.x,0, center_.z-eye_.z)/vnorm;
         center_ = vec3(eye_.x + v.x*r*abs(cos(theta_up)), eye_.y + r*abs(sin(theta_up)),eye_.z + v.z*r*abs(cos(theta_up)));
     }else if(direction==6){ //O
-        eye_=vec3(eye_.x,eye_.y+0.05,eye_.z);
-        center_ = vec3(center_.x,center_.y+0.05,center_.z);
+        eye_=vec3(eye_.x,eye_.y+0.05*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y+0.05*speed,center_.z);
     }else if(direction==7) { //P
-        eye_=vec3(eye_.x,eye_.y-0.05,eye_.z);
-        center_ = vec3(center_.x,center_.y-0.05,center_.z);
+        eye_=vec3(eye_.x,eye_.y-0.05*speed,eye_.z);
+        center_ = vec3(center_.x,center_.y-0.05*speed,center_.z);
     }
     //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
+     cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
+     cout <<"Vous regardez le point : " << center_.x<< " " << center_.z<< " " << center_.y << endl;
    view_matrix = LookAt(eye_,center_,up_);
 }
+
+
+
 
 int fillRiverPoints(float *riverPoints, int size, vec2 head){
     if(size%2==0 && riverPoints){
     float riverx = head.x;
     float rivery = head.y;
-    float corr = 10;
+    float corr = 20;
     float right_i = 0;
     float right_j = 0;
     float looking_height = 10;
@@ -168,12 +185,24 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
         rivery = rivery + right_j/corr;
         riverPoints[k*2] = riverx;
         riverPoints[k*2+1] = rivery;
-        cout << "next river point found! : " << riverx << ";"<<rivery<<endl;
     }
          return 0;
     }else{
          return -1;
     }
+}
+
+int fillAllRivers(vec2 *headList, int *lengths, int sizeOfHeads, float *riverPoints){
+    int a = 0;
+    for(int i = 0;i<sizeOfHeads;i++){
+        riverPoints[a] = lengths[i];
+        riverPoints[a+1] = lengths[i];
+        if(fillRiverPoints(riverPoints+a+2, riverPoints[a]*2, headList[i])==-1){
+            return -1;
+        }
+        a = a + 2 + riverPoints[a]*2;
+    }
+    return 0;
 }
 
 void Init() {
@@ -184,14 +213,14 @@ void Init() {
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(-1.0f, 2.0f, -1.0f);
-    center_ = vec3(2.0f, 0.0f, -2.0f);
+    eye_ = vec3(-2.5f, 2.0f, 2.0f);
+    center_ = vec3(1.0f, 0.5f, -1.0f);
     up_ = vec3(0,1,0);
-    theta = 3.14/4;
-    theta_up = -0;
-    for(int i =0;i<7;i++) {
-        moveView(i);
+    theta =-acos((center_.x -eye_.x)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
+    if(eye_.z<center_.z) {
+        theta = -theta;
     }
+    theta_up =0;
     view_matrix = lookAt(eye_,center_,up_);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
@@ -208,17 +237,24 @@ void Init() {
     glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer_heightMap.Unbind();
 
+    int sizeOfHeadlist = 3;
+    vec2 headList[3]; // MUST BE = sizeOfHeadlist
+    headList[0] = vec2(0.8,0.43);
+    headList[1] = vec2(0.62,0.8);
+    headList[2] = vec2(0.4,0.4);
+    int lenghts[3]; //MUST BE = sizeOfHeadlist
+    lenghts[0] = 3;
+    lenghts[1] = 3;
+    lenghts[2] = 2;
 
-    int riverPointsSize = 12;
+
+    int riverPointsSize = sizeOfHeadlist*2;
+    for(int i =0; i<sizeOfHeadlist; i++){
+        riverPointsSize+=lenghts[i]*2;
+    }
     float *riverPoints = (float*)calloc(riverPointsSize+3,sizeof(float*));
-    riverPoints[0] = 2;
-    riverPoints[1] = 2;
-    fillRiverPoints((riverPoints+2),4,vec2(0.8,0.5));
-    riverPoints[6] = 2;
-    riverPoints[7] = 2;
-    fillRiverPoints(riverPoints+8,4,vec2(0.62,0.8));
-    grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
-
+    fillAllRivers(headList,lenghts,sizeOfHeadlist,riverPoints);
+        grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
     free(riverPoints);
 }
 
@@ -228,6 +264,10 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
     mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0));
+
+    if(inertieMark>time){
+        moveView(inertieDir,false);
+    }
 
     //  mirror the camera position
     float waterLevel = 0.2;
@@ -242,12 +282,13 @@ void Display() {
    cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1,waterLevel);
+   grid.Draw(time, scaledModel, view_mirror, scale(projection_matrix,vec3(0.2,0.2,0.2)),1,waterLevel);
   glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
+    grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+
     //parametricTranfo(eye_,time);
 
 }
@@ -292,42 +333,43 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
     if(action == GLFW_PRESS || action == GLFW_REPEAT){
+    bool inertie = action == GLFW_REPEAT;
     switch(key){
     case 'W':
            cout<<"Moving forward"<<endl;
-           moveView(0);
+           moveView(0,true);
            break;
        case 'S':
            cout<<"Moving backward"<<endl;
-           moveView(1);
+           moveView(1,true);
            break;
 
        case 'A':
            cout<<"Moving left"<<endl;
-           moveView(3);
+           moveView(3,true);
            break;
        case 'D':
            cout<<"Moving right"<<endl;
-           moveView(2);
+           moveView(2,true);
            break;
        case 'Q':
            cout<<"Looking Up"<<endl;
-           moveView(4);
+           moveView(4,true);
            break;
        case 'E':
            cout<<"Looking Down"<<endl;
-           moveView(5);
+           moveView(5,true);
            break;
        case 'O':
-           moveView(6);
+           moveView(6,true);
            break;
        case 'P':
-            moveView(7);
+            moveView(7,true);
             break;
+        }
     }
-    }
+  }
 
-}
 
 
 int main(int argc, char *argv[]) {

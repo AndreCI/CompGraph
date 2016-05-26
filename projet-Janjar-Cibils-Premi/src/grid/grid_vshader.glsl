@@ -46,7 +46,6 @@ void main() {
         waterDefined=true;
    }
    float epsilon = 0.005;
- //  riverPoints[5] = vec2(0.42,0.6);
    int tempidx = 0;
    float end = riverPoints[0].x-1;
    bool writing = true;
@@ -57,7 +56,7 @@ void main() {
                    && riverPoints[a] !=vec2(0,0)){
 
              isWater = 3;
-             height = height;
+            // height = 1;
              waterDefined=true;
 
            }
@@ -83,10 +82,10 @@ void main() {
 
 
     // setup MVP
-   /* scale[0][0] = 3.0f;
-    scale[1][1] = 3.0f;
-    scale[2][2] = 3.0f;
-    scale[3][3] = 1.0f;*/
+    scale[0][0] = 2.8f;
+    scale[1][1] = 1.7f;
+    scale[2][2] = 2.8f;
+    scale[3][3] = 1.0f;
 
-    gl_Position = MVP* vec4(pos_3d, 1.0);
+    gl_Position = MVP*vec4(pos_3d, 1.0);
 }

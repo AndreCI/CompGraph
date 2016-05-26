@@ -5,7 +5,19 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 # these files are copied only once
 file(GLOB TEXTURES
-    grid/grid_texture.tga)
+    cube/cloudtop_rt.tga
+    cube/cloudtop_lf.tga
+    cube/cloudtop_up.tga
+    cube/cloudtop_dn.tga
+    cube/cloudtop_bk.tga
+    cube/cloudtop_ft.tga
+    grid/grass.jpg
+    grid/rock.jpg
+    grid/sand.jpg
+    grid/snow.jpg
+    grid/water.jpg
+
+    )
 copy_files_once(${TEXTURES})
 
 # list all the files you want to copy everytime
