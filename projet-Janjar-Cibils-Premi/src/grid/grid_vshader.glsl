@@ -8,7 +8,6 @@ out float currentWaterLevel;
 out float height;
 out float isWater;
 uniform sampler2D heightTex;
-uniform sampler2D texture_bump;
 uniform mat4 MVP;
 mat4 scale;
 uniform float time;
