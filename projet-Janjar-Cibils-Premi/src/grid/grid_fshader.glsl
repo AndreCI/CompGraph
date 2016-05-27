@@ -5,6 +5,7 @@ in vec2 uv;
 out vec4 color;
 in float height;
 in float isWater;
+in float currentWaterLevel;
 
 uniform sampler2D colorTex;
 uniform sampler2D mirrorTex;
@@ -15,6 +16,7 @@ uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
 uniform sampler2D texture_water;
 uniform sampler2D heightTex;
+uniform sampler2D texture_bump;
 uniform float time;
 uniform float reflect;
 uniform float waterLevel;
@@ -58,7 +60,7 @@ vec3 get_kd_fBm(){
     return vec3(kd);
 }
 vec3 get_kd_water(vec3 texture_to_mix){
-    if(isWater==1 || height<=waterLevel){
+    if(isWater==1 || height<=currentWaterLevel){
         float window_width = textureSize(mirrorTex,0).x;
         float window_height = textureSize(mirrorTex,0).y;
         float _u = 1-(gl_FragCoord.x)/window_width;
@@ -85,6 +87,10 @@ vec3 getAmbientTerm(){
 vec3 getPos(vec2 pos){
     return vec3(pos.x,pos.y,texture(heightTex,pos).x);
 }
+vec3 getPosBump(vec2 pos){
+    return vec3(pos.x,pos.y,(texture(texture_bump,pos).x + texture(texture_bump,pos).y)/30);
+}
+
 
 vec3 getDiffuseTerm(vec3 kd){
     //kd = couleur du matériel
@@ -92,14 +98,20 @@ vec3 getDiffuseTerm(vec3 kd){
     //use uv.x -1 +1
     //decaler de 1/textureSize
     vec3 normal;
-    if(height>waterLevel){
+    if(height>currentWaterLevel){
     float window_width = textureSize(heightTex,0).x;
     float window_height = textureSize(heightTex,0).y;
-    vec3 dfdx = getPos(vec2(uv.x+1/window_height,uv.y)) - getPos(vec2(uv.x-1/window_height,uv.y));
-    vec3 dfdy = getPos(vec2(uv.x,uv.y+1/window_width)) - getPos(vec2(uv.x,uv.y-1/window_width));
+    vec3 dfdx = getPos(vec2(uv.x+1/window_width,uv.y)) - getPos(vec2(uv.x-1/window_width,uv.y));
+    vec3 dfdy = getPos(vec2(uv.x,uv.y+1/window_height)) - getPos(vec2(uv.x,uv.y-1/window_height));
      normal = normalize(cross((dfdx),(dfdy)));
     }else{
-        normal = vec3(0,0,1);
+        float window_width = textureSize(texture_bump,0).x;
+        float window_height = textureSize(texture_bump,0).y;
+        vec3 dfdx = getPosBump(vec2(uv.x+1/window_width,uv.y)) - getPosBump(vec2(uv.x-1/window_width,uv.y));
+        vec3 dfdy = getPosBump(vec2(uv.x,uv.y+1/window_height)) - getPosBump(vec2(uv.x,uv.y-1/window_height));
+         normal = normalize(cross((dfdx),(dfdy)));
+
+     //   normal = vec3(0,0,1);
     }
     vec3 light_dir = normalize(vec3(1,-4,5));
   //  if(reflect!=0){
@@ -132,6 +144,7 @@ void main() {
         kd =get_kd_water(kd);
     }
     color = vec4(getAmbientTerm()+getDiffuseTerm(vec3(kd)),1);
+    color = vec4(texture(texture_water,uv).rgb,1);
     }else{
         vec4 kd = vec4(getAmbientTerm()+getDiffuseTerm(get_kd_fBm()),1);
 

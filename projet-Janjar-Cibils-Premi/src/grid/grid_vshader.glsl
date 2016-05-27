@@ -4,9 +4,11 @@
 in vec2 position;
 
 out vec2 uv;
+out float currentWaterLevel;
 out float height;
 out float isWater;
 uniform sampler2D heightTex;
+uniform sampler2D texture_bump;
 uniform mat4 MVP;
 mat4 scale;
 uniform float time;
@@ -37,13 +39,21 @@ void main() {
 
     bool waterDefined = false;
    height = (texture(heightTex,uv).x); //RED Channel has the value in it
+   currentWaterLevel = waterLevel;
    if(height<=waterLevel){
-       height =  (waterLevel);
        isWater=1;
+       height = waterNoise(uv,0.1,1,uv,0.2,1,time)/10;
+       height +=waterNoise(uv, 0.4,1.2,vec2(uv.x+4,uv.y-5),0.2,3,time)/10;
+       height +=waterNoise(uv, 0.8,0.8,vec2(uv.x+2,uv.y-6),0.4,1,time)/10;
+       height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
+       height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
+       height = height/50;
+       height+=waterLevel;
+       height-=0.1;
+
+       height += (texture(texture_bump,uv).x + texture(texture_bump,uv).y)/20;
+       currentWaterLevel = height;
        waterDefined=true;    
-   }else if((height-rand(uv)/15)<waterLevel){
-        isWater=2;
-        waterDefined=true;
    }
    float epsilon = 0.005;
    int tempidx = 0;
@@ -75,8 +85,7 @@ void main() {
       isWater=0;
     }
 
-
-
+    height = texture(texture_bump,uv).x;
     vec3 pos_3d = vec3(position.x, height, -position.y);
 
 
