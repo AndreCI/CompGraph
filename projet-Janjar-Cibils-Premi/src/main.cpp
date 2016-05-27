@@ -23,7 +23,7 @@ int window_width = 800;
 int window_height = 800;
 float inertieDir; //direction of the move where we will apply the inertie (temp var)
 float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
-const float inertieDuration = 0; //duration of inertie, make it 1.2 to have some nice effect
+const float inertieDuration = 1.2; //duration of inertie, make it 1.2 to have some nice effect
 
 float heightMap[800*800];
 
@@ -255,7 +255,7 @@ void Init() {
     }
     float *riverPoints = (float*)calloc(riverPointsSize+3,sizeof(float*));
     fillAllRivers(headList,lenghts,sizeOfHeadlist,riverPoints);
-    grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
+        grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
     free(riverPoints);
 }
 
@@ -272,9 +272,11 @@ void Display() {
 
     //  mirror the camera position
     float waterLevel = 0.2;
-    vec3 cam_pos_mirror = vec3(eye_.x,0.79-eye_.y,eye_.z);
+    vec3 cam_pos_mirror = vec3(eye_.x,0.8-eye_.y,eye_.z);
+    vec3 center_mirror = vec3(center_.x,-center_.y, center_.z);
     // create new VP for mirrored camera
-    mat4 view_mirror = lookAt(cam_pos_mirror,center_,-up_);
+    vec3 up_mirror = vec3(0,1,0);
+    mat4 view_mirror = lookAt(cam_pos_mirror,center_,-up_mirror);
 
    framebuffer_mirror.Bind();
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -286,7 +288,7 @@ void Display() {
    framebuffer_mirror.Unbind();
 
     grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
-    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
+   cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
 
     //parametricTranfo(eye_,time);
 
