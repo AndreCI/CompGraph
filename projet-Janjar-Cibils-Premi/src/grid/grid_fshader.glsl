@@ -87,8 +87,10 @@ vec3 getAmbientTerm(){
 vec3 getPos(vec2 pos){
     return vec3(pos.x,pos.y,texture(heightTex,pos).x);
 }
+
 vec3 getPosBump(vec2 pos){
-    return vec3(pos.x,pos.y,(texture(texture_bump,pos).x + texture(texture_bump,pos).y)/30);
+    float time_slowed = time/50;
+    return vec3(pos.x,pos.y,(texture(texture_bump,pos+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).y + texture(texture_bump, vec2(pos.y,pos.x)+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).x)/20);
 }
 
 
@@ -144,7 +146,7 @@ void main() {
         kd =get_kd_water(kd);
     }
     color = vec4(getAmbientTerm()+getDiffuseTerm(vec3(kd)),1);
-    color = vec4(texture(texture_water,uv).rgb,1);
+    //color = vec4(texture(texture_water,uv).rgb,1);
     }else{
         vec4 kd = vec4(getAmbientTerm()+getDiffuseTerm(get_kd_fBm()),1);
 

@@ -47,11 +47,10 @@ void main() {
        height +=waterNoise(uv, 0.8,0.8,vec2(uv.x+2,uv.y-6),0.4,1,time)/10;
        height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
        height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
-       height = height/50;
-       height+=waterLevel;
-       height-=0.1;
-
-       height += (texture(texture_bump,uv).x + texture(texture_bump,uv).y)/20;
+       height = height/100;
+       height+=waterLevel-0.05;
+        float time_slowed = time/50;
+       height += (texture(texture_bump,uv + vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).y + texture(texture_bump, vec2(uv.y,uv.x)+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).x)/20;
        currentWaterLevel = height;
        waterDefined=true;    
    }
@@ -85,7 +84,6 @@ void main() {
       isWater=0;
     }
 
-    height = texture(texture_bump,uv).x;
     vec3 pos_3d = vec3(position.x, height, -position.y);
 
 
