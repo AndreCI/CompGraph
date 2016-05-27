@@ -67,7 +67,7 @@ vec3 get_kd_water(vec3 texture_to_mix){
         float _v = (gl_FragCoord.y)/window_height;
 
        vec2 uv_ = vec2(_u,_v);
-       return (mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0.4));
+       return (mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0.7));
 
     }else if(isWater==3){
         return vec3((texture(texture_water,(uv+mod(time,3)/10))).rgb);
@@ -88,9 +88,31 @@ vec3 getPos(vec2 pos){
     return vec3(pos.x,pos.y,texture(heightTex,pos).x);
 }
 
+float waterNoise(vec2 pos, float amplitude, float wavelenght, vec2 direction, float speed, float waveNumber,float time_v){
+    float q = 1/(waveNumber*amplitude);
+    float phase = speed*2*3.1415/wavelenght;
+    float z = q*amplitude * direction.y*cos(waveNumber*dot(direction,pos)+phase*time_v);
+    return z;
+}
+float getWaterHeight(vec2 pos){
+
+
+    float height = waterNoise(uv,0.1,1,uv,0.2,1,time)/10;
+    height +=waterNoise(uv, 0.4,1.2,vec2(uv.x+4,uv.y-5),0.2,3,time)/10;
+    height +=waterNoise(uv, 0.8,0.8,vec2(uv.x+2,uv.y-6),0.4,1,time)/10;
+    height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
+    height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
+    height = height/100;
+    float noiseheight = waterNoise(uv,1,1,vec2(uv.x+1,uv.y-2),1,90,time);
+    noiseheight += waterNoise(uv,2,4,vec2(uv.x-1.5,uv.y+1),1,78,time);
+    noiseheight += waterNoise(uv,0.5,2,vec2(uv.x-3,uv.y-3),1,50,time);
+    noiseheight = noiseheight/5;
+
+    return height + noiseheight + waterLevel-0.05;
+}
+
 vec3 getPosBump(vec2 pos){
-    float time_slowed = time/50;
-    return vec3(pos.x,pos.y,(texture(texture_bump,pos+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).y + texture(texture_bump, vec2(pos.y,pos.x)+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).x)/20);
+    return vec3(pos.x,pos.y,getWaterHeight(pos));
 }
 
 

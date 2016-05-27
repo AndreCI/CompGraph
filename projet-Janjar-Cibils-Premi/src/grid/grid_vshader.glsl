@@ -48,9 +48,13 @@ void main() {
        height +=waterNoise(uv, 0.6,0.2,vec2(uv.x+9,uv.y-1),0.3,5,time)/10;
        height +=waterNoise(uv, 0.8,0.2,vec2(uv.x+2,uv.y-4),0.1,3,time)/10;
        height = height/100;
-       height+=waterLevel-0.05;
-        float time_slowed = time/50;
-       height += (texture(texture_bump,uv + vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).y + texture(texture_bump, vec2(uv.y,uv.x)+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).x)/20;
+       float noiseheight = waterNoise(uv,1,1,vec2(uv.x+1,uv.y-2),1,90,time);
+       noiseheight += waterNoise(uv,2,4,vec2(uv.x-1.5,uv.y+1),1,78,time);
+       noiseheight += waterNoise(uv,0.5,2,vec2(uv.x-3,uv.y-3),1,50,time);
+       noiseheight = noiseheight/5;
+
+       height=height + noiseheight + waterLevel-0.05;
+    //   height += (texture(texture_bump,uv + vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).y + texture(texture_bump, vec2(uv.y,uv.x)+ vec2(cos(time_slowed)/2+0.5, sin(time_slowed)/4 +0.25)).x)/20;
        currentWaterLevel = height;
        waterDefined=true;    
    }
@@ -65,7 +69,7 @@ void main() {
                    && riverPoints[a] !=vec2(0,0)){
 
              isWater = 3;
-            // height = 1;
+             height = height;
              waterDefined=true;
 
            }
