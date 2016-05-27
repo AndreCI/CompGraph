@@ -213,21 +213,22 @@ void Init() {
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(-2.5f, 2.0f, 2.0f);
+    eye_ = vec3(-1.5f, 2.0f, 1.0f);
     center_ = vec3(1.0f, 0.5f, -1.0f);
     up_ = vec3(0,1,0);
     theta =-acos((center_.x -eye_.x)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
     if(eye_.z<center_.z) {
         theta = -theta;
     }
-    theta_up =0;
+    theta_up =-asin((center_.y -eye_.y)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
+
     view_matrix = lookAt(eye_,center_,up_);
     screenquad.Init(window_width,window_height,noise_tex_id);
     cube.Init();
    // enable depth test.
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
