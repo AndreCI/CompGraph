@@ -16,7 +16,6 @@ uniform sampler2D texture_grass;
 uniform sampler2D texture_sand;
 uniform sampler2D texture_water;
 uniform sampler2D heightTex;
-uniform sampler2D texture_bump;
 uniform float time;
 uniform float reflect;
 uniform float waterLevel;
@@ -122,15 +121,13 @@ vec3 getDiffuseTerm(vec3 kd){
     //use uv.x -1 +1
     //decaler de 1/textureSize
     vec3 normal;
-    if(height>currentWaterLevel){
     float window_width = textureSize(heightTex,0).x;
     float window_height = textureSize(heightTex,0).y;
-    vec3 dfdx = getPos(vec2(uv.x+1/window_width,uv.y)) - getPos(vec2(uv.x-1/window_width,uv.y));
-    vec3 dfdy = getPos(vec2(uv.x,uv.y+1/window_height)) - getPos(vec2(uv.x,uv.y-1/window_height));
+    if(height>currentWaterLevel){
+         vec3 dfdx = getPos(vec2(uv.x+1/window_width,uv.y)) - getPos(vec2(uv.x-1/window_width,uv.y));
+         vec3 dfdy = getPos(vec2(uv.x,uv.y+1/window_height)) - getPos(vec2(uv.x,uv.y-1/window_height));
      normal = normalize(cross((dfdx),(dfdy)));
     }else{
-        float window_width = textureSize(texture_bump,0).x;
-        float window_height = textureSize(texture_bump,0).y;
         vec3 dfdx = getPosBump(vec2(uv.x+1/window_width,uv.y)) - getPosBump(vec2(uv.x-1/window_width,uv.y));
         vec3 dfdy = getPosBump(vec2(uv.x,uv.y+1/window_height)) - getPosBump(vec2(uv.x,uv.y-1/window_height));
          normal = normalize(cross((dfdx),(dfdy)));
