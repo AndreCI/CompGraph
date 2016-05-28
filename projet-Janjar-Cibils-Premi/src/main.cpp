@@ -290,11 +290,11 @@ void Display() {
    cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   grid.Draw(time, scaledModel, view_mirror, scale(projection_matrix,vec3(0.2,0.2,0.2)),1,waterLevel);
-  glDisable(GL_CULL_FACE);
+   grid.Draw(time, scaledModel, view_mirror, projection_matrix,1,waterLevel);
+   glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
+   grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
    //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
    if(bezier) {
