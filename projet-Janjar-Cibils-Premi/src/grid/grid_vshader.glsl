@@ -17,6 +17,17 @@ uniform float waterLevel;
 
 float rand(vec2 co){return (fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453));}
 
+float smoothHeight(vec2 pos){
+    float sumHeight = 0;
+    float corr = 40;
+    for(int i = -1; i<=1; i++){
+        for(int j = -1; j<=1; j++){
+            sumHeight+=texture(heightTex,vec2(pos.x+i/corr, pos.y+j/corr)).x;
+        }
+    }
+    return sumHeight/9 - 0.02;
+}
+
 vec2 getRandomGradient(vec2 xy, float seed){
     float x = seed * rand(xy);
    return vec2(sin(x),cos(x));
@@ -68,7 +79,7 @@ void main() {
                    && riverPoints[a] !=vec2(0,0)){
 
              isWater = 3;
-             height = height;
+             height = smoothHeight(uv);
              waterDefined=true;
 
            }
