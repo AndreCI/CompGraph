@@ -73,6 +73,17 @@ vec3 get_kd_water(vec3 texture_to_mix){
     }
 }
 
+float smoothHeight(vec2 pos){
+    float sumHeight = 0;
+    float corr = 40;
+    for(int i = -1; i<=1; i++){
+        for(int j = -1; j<=1; j++){
+            sumHeight+=texture(heightTex,vec2(pos.x+i/corr, pos.y+j/corr)).x;
+        }
+    }
+    return sumHeight/9 - 0.02;
+}
+
 vec3 getAmbientTerm(){
 
     vec3 La = vec3(1.0f, 1.0f, 1.0f);
@@ -114,6 +125,10 @@ vec3 getPosBump(vec2 pos){
     return vec3(pos.x,pos.y,getWaterHeight(pos));
 }
 
+vec3 getPosRiver(vec2 pos){
+    return vec3(pos.x,pos.y, smoothHeight(pos));
+}
+
 
 vec3 getDiffuseTerm(vec3 kd){
     //kd = couleur du matériel
@@ -123,7 +138,11 @@ vec3 getDiffuseTerm(vec3 kd){
     vec3 normal;
     float window_width = textureSize(heightTex,0).x;
     float window_height = textureSize(heightTex,0).y;
-    if(height>currentWaterLevel){
+    if(isWater==3){
+        vec3 dfdx = getPosRiver(vec2(uv.x+1/window_width,uv.y)) - getPosRiver(vec2(uv.x-1/window_width,uv.y));
+        vec3 dfdy = getPosRiver(vec2(uv.x,uv.y+1/window_height)) - getPosRiver(vec2(uv.x,uv.y-1/window_height));
+          normal = normalize(cross((dfdx),(dfdy)));
+    }else if(height>currentWaterLevel){
          vec3 dfdx = getPos(vec2(uv.x+1/window_width,uv.y)) - getPos(vec2(uv.x-1/window_width,uv.y));
          vec3 dfdy = getPos(vec2(uv.x,uv.y+1/window_height)) - getPos(vec2(uv.x,uv.y-1/window_height));
      normal = normalize(cross((dfdx),(dfdy)));
