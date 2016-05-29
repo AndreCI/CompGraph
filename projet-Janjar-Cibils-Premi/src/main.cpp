@@ -171,8 +171,8 @@ int fillRiverPoints(float *riverPoints, int size, vec2 head){
 
     for(int k=0; k<floor(size/2); k++){
 
-        for(float i=-1;i<1;i+=0.5){
-            for(float j = -1; j<1; j+=0.5){
+        for(float i=-1;i<=1;i+=0.5){
+            for(float j = -1; j<=1; j+=0.5){
                 looking_height = getHeight(riverx+i/corr,rivery+j/corr);
                 if(looking_height<cu_height){
                     cu_height = looking_height;

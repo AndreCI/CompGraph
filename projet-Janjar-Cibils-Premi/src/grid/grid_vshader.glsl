@@ -68,7 +68,7 @@ void main() {
        currentWaterLevel = height;
        waterDefined=true;    
    }
-   float epsilon = 0.005;
+   float epsilon = 0.001;
    int tempidx = 0;
    float end = riverPoints[0].x-1;
    bool writing = true;

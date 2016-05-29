@@ -69,7 +69,7 @@ vec3 get_kd_water(vec3 texture_to_mix){
        return (mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0.7));
 
     }else if(isWater==3){
-        return vec3((texture(texture_water,(uv+mod(time,3)/10))).rgb);
+        return vec3((texture(texture_water,(uv+mod(time,30)/40))).rgb);
     }
 }
 
