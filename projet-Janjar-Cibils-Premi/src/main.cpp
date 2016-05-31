@@ -25,7 +25,9 @@ float inertieDir; //direction of the move where we will apply the inertie (temp 
 float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
 const float inertieDuration = 1.2; //duration of inertie, make it 1.2 to have some nice effect
 
-float heightMap[800*800];
+float *heightMap = (float*)calloc(window_height*window_width,sizeof(float));
+
+vec3 curvePoints[3];
 
 using namespace glm;
 
@@ -34,6 +36,7 @@ mat4 view_matrix;
 vec3 eye_;
 vec3 center_;
 vec3 up_;
+int bezier=0;
 
 GLfloat currenty ;
 
@@ -69,34 +72,34 @@ mat4 LookAt(vec3 eye, vec3 center, vec3 up) {
 }
 
 int getHeight(float x, float y){
-    float lowerbound = -2;
-    float upperbound = 6;
-    if(x < lowerbound || y < lowerbound || x>upperbound || y> upperbound){
-        return 4;
-    }
-    float newX = floor((x-lowerbound)/(upperbound-lowerbound) *window_width);
-    float newY = floor((y-lowerbound)/(upperbound-lowerbound) *window_height );
-    int indice = ((newX) + (newY)*window_height);
-    cout << heightMap[indice] << " x:" << newX << " y:" << newY << endl;
-    return heightMap[indice];
+    framebuffer_heightMap.Bind();
+    //glReadPixels(round(((x+1)/4.0)*window_width),(round(((3+y)/4.0)*window_height)),window_width,window_height,GL_RED,GL_FLOAT,heightMap);
+    int index = floor(round(((x+1)/4.0)*window_width)+(round(((3+y)/4.0)*window_height)));
+    framebuffer_heightMap.Unbind();
+    return heightMap[index];
 }
 
-vec3 bezierCurve(vec3 P0 ,float time) {
-    float x = 5*cos(time/2);
-    float y = 4.5+cos(time);
-    float z = 10*sin(time/2);
-    return vec3(x,y,z);
+vec3 bezierCurve(vec3 P0,vec3 P1 , vec3 P2 ,float time) {
+      float t= 1 - time;
+      float x = t*t * P0.x + 2*t *time *P1.x + time*time *P2.x;
+      float z = t*t * P0.z + 2*t*time * P1.z + time * time *P2.z;
+      vec3 p = vec3(x,P0.y,z);
+      return p;
+    }
+
+void listVec(vec3 buff[] , float time) {
+    for(int i = 0; i < 3; i+=3){
+         vec3 p0 = buff[i];
+         vec3 p1 = buff[i + 1];
+         vec3 p2 = buff[i + 2];
+         eye_ = bezierCurve(p0,p1,p2,fmod(time/20,1));
+         view_matrix = lookAt(eye_,center_,up_);
+    }
 }
+
 
 vec3 changeCenter(vec3 d) {
     return vec3(fmod(d.x+0.5,2),fmod(d.y-0.2,2),d.z);
-}
-
-void parametricTranfo(vec3 pos,float time) {
-   vec3 bc = bezierCurve(pos,time);
-   vec3 center = center_;
-   center = changeCenter(center);
-   view_matrix = lookAt(bc,center,up_);
 }
 
 void moveView(float direction, bool userCalled){
@@ -148,11 +151,10 @@ void moveView(float direction, bool userCalled){
         eye_=vec3(eye_.x,eye_.y-0.05*speed,eye_.z);
         center_ = vec3(center_.x,center_.y-0.05*speed,center_.z);
     }
-    //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
     center_ = vec3(center_.x,0.5f , center_.z);
     up_ = vec3(0.0f, 1.0f, 0.0f);
      cout << "Vous etes a : " << eye_.x << " x ; " << eye_.z << " z ; " << eye_.y << " y ; " << endl;
-     cout <<"Vous regardez le point : " << center_.x<< " " << center_.z<< " " << center_.y << endl;
+     //cout <<"Vous regardez le point : " << center_.x<< " " << center_.z<< " " << center_.y << endl;
    view_matrix = LookAt(eye_,center_,up_);
 }
 
@@ -213,7 +215,7 @@ void Init() {
     mirror_tex_id = framebuffer_mirror.Init(window_width,window_height);
     glClearColor(0.937, 0.937, 0.937 /*gray*/, 1.0 /*solid*/);
 
-    eye_ = vec3(-1.5f, 2.0f, 1.0f);
+    eye_ = vec3(-2.0f, 2.2f, 2.0f);
     center_ = vec3(1.0f, 0.5f, -1.0f);
     up_ = vec3(0,1,0);
     theta =-acos((center_.x -eye_.x)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
@@ -235,7 +237,6 @@ void Init() {
     framebuffer_heightMap.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     screenquad.Draw();
-    glReadPixels(0,0,window_width,window_height,GL_RED,GL_FLOAT,heightMap);
     framebuffer_heightMap.Unbind();
 
     int sizeOfHeadlist = 3;
@@ -257,6 +258,11 @@ void Init() {
     fillAllRivers(headList,lenghts,sizeOfHeadlist,riverPoints);
         grid.Init(noise_tex_id,mirror_tex_id,256, riverPoints, riverPointsSize);
     free(riverPoints);
+
+    curvePoints[0] = vec3(-2,2.5,-1.5);
+    curvePoints[1] = vec3(1.5,2.5,2);
+    curvePoints[2] = vec3(5,2.5,-1.5);
+
 }
 
 
@@ -264,7 +270,7 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
-    mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,2.0,2.0));
+    mat4 scaledModel = IDENTITY_MATRIX;
 
     if(inertieMark>time){
         moveView(inertieDir,false);
@@ -283,15 +289,17 @@ void Display() {
    cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   grid.Draw(time, scaledModel, view_mirror, scale(projection_matrix,vec3(0.2,0.2,0.2)),1,waterLevel);
+   grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix,1,waterLevel);
   glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
+    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
-
-    //parametricTranfo(eye_,time);
-
+   //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
+   if(bezier) {
+   listVec(curvePoints,time);
+   }
+   view_matrix = lookAt(eye_,center_,up_);
 }
 
 // transforms glfw screen coordinates into normalized OpenGL coordinates.
@@ -366,6 +374,13 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
            break;
        case 'P':
             moveView(7,true);
+            break;
+       case 'B' :
+            if(bezier) {
+            bezier =0;
+            } else {
+            bezier = 1;
+            }
             break;
         }
     }

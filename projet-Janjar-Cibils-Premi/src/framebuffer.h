@@ -6,12 +6,12 @@ class FrameBuffer {
     private:
         int width_;
         int _;
-        GLuint framebuffer_object_id_;
         GLuint depth_render_buffer_id_;
 
         GLuint _texture_id_;
 
     public:
+        GLuint framebuffer_object_id_;
         // warning: overrides viewport!!
         void Bind() {
             glViewport(0, 0, width_, _);
