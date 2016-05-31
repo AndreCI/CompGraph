@@ -241,9 +241,9 @@ void Init() {
 
     int sizeOfHeadlist = 3;
     vec2 headList[3]; // MUST BE = sizeOfHeadlist
-    headList[0] = vec2(0.8,0.43);
-    headList[1] = vec2(0.62,0.8);
-    headList[2] = vec2(0.4,0.4);
+    headList[0] = vec2(0.93,0.42);
+    headList[1] = vec2(0.7,0.6);
+    headList[2] = vec2(0.36,0.39);
     int lenghts[3]; //MUST BE = sizeOfHeadlist
     lenghts[0] = 3;
     lenghts[1] = 3;
