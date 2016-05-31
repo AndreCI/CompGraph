@@ -9,7 +9,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "grid/grid.h"
 #include "framebuffer.h"
-#include "trackball.h"
 #include "screenquad/screenquad.h"
 #include "cube/cube.h"
 Cube cube;
@@ -393,7 +392,7 @@ int main(int argc, char *argv[]) {
     // note some Intel GPUs do not support OpenGL 3.2
     // note update the driver of your graphic card
     GLFWwindow* window = glfwCreateWindow(window_width, window_height,
-                                          "Trackball", NULL, NULL);
+                                          "Mountain Project", NULL, NULL);
     if(!window) {
         glfwTerminate();
         return EXIT_FAILURE;
