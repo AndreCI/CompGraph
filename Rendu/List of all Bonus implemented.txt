@@ -1,0 +1,15 @@
+Computer Graphic : list of all the features we implemented beyond the minimum requirement
+
+-Water : If the height is below 0.2, we added water. The water is animated and there are reflect.
+
+-Rivers : We added some rivers to our landscape. They are calculated using the gradient descend algorithm.
+The animation is not that good, we wanted to add some particle to have a better rending but didn't manage to add them in time.
+
+-We tried also a lot of others features, but we didn't manage to implent them.
+The following were considered : adding particle, a shadowmap, making the terrain rolling under the feet of the user to make it seems endless, fog, and mostly we tried to create an "mars"-like landscape, by adding canyon procedural generation, additional texture, volcano, procedural lava texture generation...
+We run out of time so we can't present you the project, we drop it 3 weeks ago.
+
+Split of work : 
+We used a github where any of us could create a new issue. The idea was that the issues were linked to a milestone (Part 1, 2 or 3) and to the labels "enhancement" (i.e. it is beyond the minimum requirement), and "bug"
+Then, any of us could go and assign itself to an issue, depending on his competences and willingness to work on it.
+This didn't work as we intend to, probably because of a lack of communication between our teammembers. Max & André ended up working much than Youssef, espcially on the bonus issues.
