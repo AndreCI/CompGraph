@@ -9,9 +9,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "grid/grid.h"
 #include "framebuffer.h"
-#include "trackball.h"
 #include "screenquad/screenquad.h"
 #include "cube/cube.h"
+#include "trackball.h"
+
 Cube cube;
 Grid grid;
 FrameBuffer framebuffer_heightMap;
@@ -86,6 +87,9 @@ vec3 bezierCurve(vec3 P0,vec3 P1 , vec3 P2 ,float time) {
       vec3 p = vec3(x,P0.y,z);
       return p;
     }
+vec3 changeCenter(vec3 d) {
+    return vec3(fmod(d.x+0.5,3),fmod(d.y-0.2,3),d.z);
+}
 
 void listVec(vec3 buff[] , float time) {
     for(int i = 0; i < 3; i+=3){
@@ -93,14 +97,11 @@ void listVec(vec3 buff[] , float time) {
          vec3 p1 = buff[i + 1];
          vec3 p2 = buff[i + 2];
          eye_ = bezierCurve(p0,p1,p2,fmod(time/20,1));
-         view_matrix = lookAt(eye_,center_,up_);
+         vec3 center = changeCenter(center_);
+         view_matrix = lookAt(eye_,center,up_);
     }
 }
 
-
-vec3 changeCenter(vec3 d) {
-    return vec3(fmod(d.x+0.5,2),fmod(d.y-0.2,2),d.z);
-}
 
 void moveView(float direction, bool userCalled){
     inertieDir = direction;
@@ -270,7 +271,7 @@ void Init() {
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     const float time = glfwGetTime();
-    mat4 scaledModel = IDENTITY_MATRIX;
+    mat4 scaledModel = scale(IDENTITY_MATRIX,vec3(2.0,1.5,2.0));
 
     if(inertieMark>time){
         moveView(inertieDir,false);
@@ -289,11 +290,11 @@ void Display() {
    cube.Draw(IDENTITY_MATRIX,view_mirror,projection_matrix);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   grid.Draw(time, IDENTITY_MATRIX, view_mirror, projection_matrix,1,waterLevel);
+   grid.Draw(time, scaledModel, view_mirror, scale(projection_matrix,vec3(0.2,0.2,0.2)),1,waterLevel);
   glDisable(GL_CULL_FACE);
    framebuffer_mirror.Unbind();
 
-    grid.Draw(time,scaledModel, view_matrix, projection_matrix,0,waterLevel);
+    grid.Draw(time,scaledModel, view_matrix, scale(projection_matrix,vec3(0.2,0.2,0.2)),0,waterLevel);
    cube.Draw(IDENTITY_MATRIX,view_matrix,projection_matrix);
    //eye_ = vec3(eye_.x,getHeight(eye_.x,eye_.z) + 0.1f,eye_.z);
    if(bezier) {
@@ -408,7 +409,7 @@ int main(int argc, char *argv[]) {
     // note some Intel GPUs do not support OpenGL 3.2
     // note update the driver of your graphic card
     GLFWwindow* window = glfwCreateWindow(window_width, window_height,
-                                          "Trackball", NULL, NULL);
+                                          "Project Mountain", NULL, NULL);
     if(!window) {
         glfwTerminate();
         return EXIT_FAILURE;
