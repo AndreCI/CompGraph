@@ -97,8 +97,8 @@ void listVec(vec3 buff[] , float time) {
          vec3 p1 = buff[i + 1];
          vec3 p2 = buff[i + 2];
          eye_ = bezierCurve(p0,p1,p2,fmod(time/20,1));
-         vec3 center = changeCenter(center_);
-         view_matrix = lookAt(eye_,center,up_);
+         //vec3 center = changeCenter(center_);
+         view_matrix = lookAt(eye_,center_,up_);
     }
 }
 
@@ -220,7 +220,7 @@ void Init() {
     center_ = vec3(1.0f, 0.5f, -1.0f);
     up_ = vec3(0,1,0);
     theta =-acos((center_.x -eye_.x)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
-    if(eye_.z<center_.z) {
+    if(eye_.z<center_.z && eye_.x>center_.x) {
         theta = -theta;
     }
     theta_up =-asin((center_.y -eye_.y)/sqrt((eye_.x-center_.x)*(eye_.x-center_.x) +(eye_.y-center_.y)*(eye_.y-center_.y)+(eye_.z - center_.z)*(eye_.z - center_.z)));
