@@ -15,17 +15,18 @@ class Cube {
         GLuint cubeTexture;
         GLuint cubemapTexture;
         GLuint textureID;
+        GLuint topsky;
 
     public:
         void loadTexture() {
 
             vector<const GLchar*> faces;
-            faces.push_back("cloudtop_rt.tga");
-            faces.push_back("cloudtop_lf.tga");
-            faces.push_back("cloudtop_up.tga");
-            faces.push_back("cloudtop_dn.tga");
-            faces.push_back("cloudtop_bk.tga");
-            faces.push_back("cloudtop_ft.tga");
+            faces.push_back("right.jpg");
+            faces.push_back("left.jpg");
+            faces.push_back("top.jpg");
+            faces.push_back("bottom.jpg");
+            faces.push_back("back.jpg");
+            faces.push_back("front.jpg");
 
             int width,height;
             int nb_component;
@@ -113,6 +114,9 @@ class Cube {
 
             // other uniforms
             MVP_id_ = glGetUniformLocation(program_id_, "MVP");
+            topsky = glGetUniformLocation(program_id_,"topsky");
+            glUniform1i(topsky,0);
+
 
             // to avoid the current object being polluted
             glBindVertexArray(0);

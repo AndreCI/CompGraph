@@ -66,10 +66,10 @@ vec3 get_kd_water(vec3 texture_to_mix){
         float _v = (gl_FragCoord.y)/window_height;
 
        vec2 uv_ = vec2(_u,_v);
-       return (mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb,0.7));
+       return (mix(texture(mirrorTex,uv_).rgb,(texture(texture_water,uv)).rgb + vec3(0,0,0.3),0.5));
 
     }else if(isWater==3){
-        return vec3((texture(texture_water,(uv+mod(time,30)/40))).rgb);
+        return vec3((texture(texture_water,(uv+mod(time,30)/40))).rgb+ vec3(0,0,0.3));
     }
 }
 
@@ -151,16 +151,16 @@ vec3 getDiffuseTerm(vec3 kd){
         vec3 dfdy = getPosBump(vec2(uv.x,uv.y+1/window_height)) - getPosBump(vec2(uv.x,uv.y-1/window_height));
          normal = normalize(cross((dfdx),(dfdy)));
 
-     //   normal = vec3(0,0,1);
+        normal = vec3(0,0,1);
     }
-    vec3 light_dir = normalize(vec3(1,-4,5));
+    vec3 light_dir = normalize(vec3(-1,-4,5));
   //  if(reflect!=0){
    //     light_dir = vec3(-light_dir.x, -light_dir.y, light_dir.z);
    // }
     //Direction de la lumiere
     vec3 Ld = (vec3(1,1,1));
     //Couleur de la lumiere
-    return vec3(kd * dot(normal,light_dir) * Ld);
+    return vec3(kd * dot(normal,light_dir) * Ld*1.5);
 }
 
 /*vec3 getSpecularTerm(vec3 lightDir, vec3 normal){
