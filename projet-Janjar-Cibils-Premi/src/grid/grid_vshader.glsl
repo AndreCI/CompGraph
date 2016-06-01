@@ -103,10 +103,10 @@ void main() {
 
 
     // setup MVP
-    scale[0][0] = 2.8f;
-    scale[1][1] = 1.7f;
-    scale[2][2] = 2.8f;
+    scale[0][0] = 2.0f;
+    scale[1][1] = 1.5f;
+    scale[2][2] = 2.0f;
     scale[3][3] = 1.0f;
 
-    gl_Position = MVP*vec4(pos_3d, 1.0);
+    gl_Position = MVP*scale*vec4(pos_3d, 1.0);
 }
