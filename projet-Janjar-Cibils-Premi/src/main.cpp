@@ -24,7 +24,7 @@ int window_width = 800;
 int window_height = 800;
 float inertieDir; //direction of the move where we will apply the inertie (temp var)
 float inertieMark; //inertie mark, so inertie will stop a time t = inertieMark + inertieDuration (temp var)
-const float inertieDuration = 0.7; //duration of inertie, make it 1.2 to have some nice effect
+const float inertieDuration = 0; //duration of inertie, make it 1.2 to have some nice effect
 
 float *heightMap = (float*)calloc(window_height*window_width,sizeof(float));
 
