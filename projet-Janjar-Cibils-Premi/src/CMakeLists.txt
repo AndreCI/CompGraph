@@ -5,12 +5,12 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 # these files are copied only once
 file(GLOB TEXTURES
-    cube/cloudtop_rt.tga
-    cube/cloudtop_lf.tga
-    cube/cloudtop_up.tga
-    cube/cloudtop_dn.tga
-    cube/cloudtop_bk.tga
-    cube/cloudtop_ft.tga
+    cube/top.jpg
+    cube/bottom.jpg
+    cube/right.jpg
+    cube/left.jpg
+    cube/back.jpg
+    cube/front.jpg
     grid/grass.jpg
     grid/rock.jpg
     grid/sand.jpg
